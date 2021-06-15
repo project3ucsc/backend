@@ -1,5 +1,4 @@
-# Restful API with Node.js Express and MongoDB
-
+# Restful API with Node.js Express and mysql
 To run in localhost,
 
 ### npm start
