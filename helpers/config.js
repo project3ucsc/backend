@@ -1,2 +1,2 @@
-const secret = 'lakshan'
-module.exports = secret
+const secret = "lakshan";
+module.exports = { secret };

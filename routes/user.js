@@ -1,7 +1,10 @@
 const express = require("express")
 const Router = express.Router()
 
-const User = require('../models/User')
+const { PrismaClient, Role } = require("@prisma/client");
+const prisma = new PrismaClient();
+
+
 
 // return all user documents
 Router.get('/', async (req,res)=>{
