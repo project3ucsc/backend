@@ -1,0 +1,27 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+
+model User {
+  id       Int      @default(autoincrement()) @id
+  username String   @db.VarChar(20)
+  password String   @db.VarChar(20)
+  role     Role     @default(STUDENT)
+}
+
+enum Role {
+  STUDENT
+  TEACHER
+  PRINCIPAl
+  SCHOOLADMIN
+  ADMIN
+}
