@@ -34,5 +34,6 @@ app.get("/", (req, res) => {
 // db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 //SERVER
-app.listen(3002);
+const port = process.env.PORT || 1337;
+app.listen(port);
 console.log("server listening at port 3002");
