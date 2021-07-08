@@ -14,6 +14,11 @@ Route.post("/", (req, res, next) => {
     .catch(next);
 });
 
+Route.post("/register", (req, res, next) => {
+  console.log(req.body);
+  res.json(req.body);
+});
+
 async function authenticate({ username, password }) {
   const user = await prisma.user.findFirst({
     where: {

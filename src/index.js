@@ -21,6 +21,7 @@ app.use("/login", loginRoute);
 
 // ROUTES
 app.get("/", (req, res) => {
+  console.log(req);
   res.send("Hello this is movie API");
 });
 
@@ -36,4 +37,4 @@ app.get("/", (req, res) => {
 //SERVER
 const port = process.env.PORT || 1337;
 app.listen(port);
-console.log("server listening at port 3002");
+console.log("server listening at port " + process.env.PORT);
