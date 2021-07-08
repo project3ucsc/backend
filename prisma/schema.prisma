@@ -1,27 +1,234 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+generator client {
+  provider = "prisma-client-js"
+}
 
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
+model user {
+  id                     Int              @id @default(autoincrement())
+  username               String           @db.VarChar(20)
+  password               String           @db.VarChar(20)
+  role                   user_role        @default(STUDENT)
+  acc_status             acc_status       @default(INITIAL)
+  school_id              Int
+  school                 school           @relation(fields: [school_id], references: [id])
+  teacher_subject_detail subject_detail[]
+  teacher_relief_period  relief_period[]
+
+  studentdetail        studentdetail[]
+  freeprogs_suggetions freeprogs_suggetions[]
+  @@index([school_id], name: "school_id")
 }
 
+model studentdetail {
+  id      Int @id @default(autoincrement())
+  user_id Int
+  classid Int
 
-model User {
-  id       Int      @default(autoincrement()) @id
-  username String   @db.VarChar(20)
-  password String   @db.VarChar(20)
-  role     Role     @default(STUDENT)
+
+
+  classroom    classroom      @relation(fields: [classid], references: [id])
+  user         user           @relation(fields: [user_id], references: [id])
+  optionalsubs optionalsubs[]
 }
 
-enum Role {
+model optionalsubs {
+  id               Int           @id @default(autoincrement())
+  studentdetail_id Int
+  subject_id       Int
+  studentdetail    studentdetail @relation(fields: [studentdetail_id], references: [id])
+  subject          subject       @relation(fields: [subject_id], references: [id])
+}
+
+model classroom {
+  id             Int              @id @default(autoincrement())
+  grade          grade
+  name           String           @db.Char(1)
+  school_id      Int
+  school         school           @relation(fields: [school_id], references: [id])
+  studentdetail  studentdetail[]
+  subject_detail subject_detail[]
+
+  @@index([school_id], name: "school_id")
+}
+
+model school {
+  id        Int         @id @default(autoincrement())
+  name      String      @db.VarChar(150)
+  address   String      @db.VarChar(150)
+  classroom classroom[]
+  user      user[]
+}
+
+model subject {
+  id             Int              @id @default(autoincrement())
+  code           String           @db.VarChar(6)
+  grade          grade
+  subjectgroup   subjectgroup
+  name           String           @db.VarChar(20)
+  subject_detail subject_detail[]
+
+  optionalsubs optionalsubs[]
+}
+
+model subject_detail {
+  id             Int             @unique @default(autoincrement())
+  classid        Int
+  subjectid      Int
+  tsid           Int
+  teacher_id     Int
+  teacher        user            @relation(fields: [teacher_id], references: [id])
+  classroom      classroom       @relation(fields: [classid], references: [id])
+  subject        subject         @relation(fields: [subjectid], references: [id])
+  time_slot      time_slot[]
+  quiz           quiz[]
+  relief_periods relief_period[]
+
+  @@id([classid, subjectid])
+  @@index([subjectid], name: "subjectid")
+  @@map("subject detail")
+}
+
+model time_slot {
+  id             Int               @id @default(autoincrement())
+  weekday        time_slot_weekday
+  starttime      DateTime          @db.Time(0)
+  endtime        DateTime          @db.Time(0)
+  sdid           Int
+  subject_detail subject_detail    @relation(fields: [sdid], references: [id])
+
+  @@index([sdid], name: "sdid")
+  @@map("time slot")
+}
+
+model relief_period {
+  id             Int            @id @default(autoincrement())
+  sdid           Int
+  subject_detail subject_detail @relation(fields: [sdid], references: [id])
+  teacher_id     Int
+  teacher        user           @relation(fields: [teacher_id], references: [id])
+
+  @@map("relief period")
+}
+
+model freeprogs {
+  id          Int     @id @default(autoincrement())
+  title       String  @db.VarChar(100)
+  discription String  @db.VarChar(200)
+  time        String? @db.VarChar(100)
+  imgurl      String? @db.VarChar(200)
+  rating      Float?
+  ratecount   Int
+}
+
+model freeprogs_suggetions {
+  id           Int    @id @default(autoincrement())
+  user_id      Int
+  progtitle    String @db.VarChar(100)
+  discription  String @db.VarChar(300)
+  freeprogs_id Int
+  student      user   @relation(fields: [user_id], references: [id])
+
+  @@map("freeprogs suggetions")
+}
+
+model quiz {
+  id             Int            @id @default(autoincrement())
+  discription    String         @db.VarChar(30)
+  attemps        Int
+  time_limit     Int
+  datetime       DateTime       @db.DateTime
+  sdid           Int
+  subject_detail subject_detail @relation(fields: [sdid], references: [id])
+  qna            QnA[]
+}
+
+model QnA {
+  id            Int      @id @default(autoincrement())
+  question      String   @db.VarChar(50)
+  answers       answer[]
+  correctanswer Int
+  qid           Int
+  quiz          quiz     @relation(fields: [qid], references: [id])
+
+  @@map("qna")
+}
+
+model answer {
+  id      Int    @id @default(autoincrement())
+  answers String @db.VarChar(50)
+  qnaid   Int
+  qna     QnA    @relation(fields: [qnaid], references: [id])
+}
+
+model studentanswer {
+  id          Int @id @default(autoincrement())
+  answer      Int
+  question_id Int
+  quiz_id     Int
+  student_id  Int
+}
+
+enum grade {
+  G1
+  G2
+  G3
+  G4
+  G5
+  G6
+  G7
+  G8
+  G9
+  G10
+  G11
+  G12MATH
+  G12BIO
+  G12ART
+  G12COM
+  G12TECH
+  G13MATH
+  G13BIO
+  G13ART
+  G13COM
+  G13TECH
+}
+
+enum subjectgroup {
+  COMP
+  OPTIONAL_69
+  OL_BUCKET_1
+  OL_BUCKET_2
+  OL_BUCKET_3
+  MATH_CHEM_IT
+  BIO_PHY_AGRI
+  ART_BLA
+  COM_IT
+  TECH_IT
+}
+
+enum time_slot_weekday {
+  MON
+  TUE
+  WED
+  THU
+  FRI
+
+  @@map("time slot_weekday")
+}
+
+enum user_role {
   STUDENT
   TEACHER
   PRINCIPAl
   SCHOOLADMIN
   ADMIN
+}
+
+enum acc_status {
+  INITIAL
+  ACTIVE
+  REVOKED
 }
