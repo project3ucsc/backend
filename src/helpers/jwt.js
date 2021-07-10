@@ -8,6 +8,7 @@ function jwt() {
       // public routes that don't require authentication
       "/login",
       "/login/register",
+      "/login/register/school"
     ],
   });
 }

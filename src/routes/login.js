@@ -1,39 +1,28 @@
 const { Router } = require("express");
-const { secret } = require("../helpers/config");
+const authservice = require("../services/authentication.service");
 // const User = require('../models/User')
-const jwt = require("jsonwebtoken");
-
-const { PrismaClient, Role } = require("@prisma/client");
-const prisma = new PrismaClient();
 
 const Route = Router();
 
 Route.post("/", (req, res, next) => {
-  authenticate(req.body)
+  authservice
+    .authenticate(req.body)
     .then((user) => res.json(user))
     .catch(next);
 });
 
 Route.post("/register", (req, res, next) => {
-  console.log(req.body);
-  res.json(req.body);
+  authservice
+    .register(req.body)
+    .then((user) => res.json(user))
+    .catch(next);
 });
 
-async function authenticate({ username, password }) {
-  const user = await prisma.user.findFirst({
-    where: {
-      username: username,
-      password: password,
-    },
-  });
-
-  if (!user) throw "Username password incorrect";
-
-  const token = jwt.sign({ sub: user.username }, "lakshan", {
-    expiresIn: "7d",
-  });
-  const { id, role } = user;
-  return { id, username, role, token };
-}
+Route.get("/register/school", (req, res, next) => {
+  authservice
+    .getAllSchools()
+    .then((schools) => res.json(schools))
+    .catch(next);
+});
 
 module.exports = Route;

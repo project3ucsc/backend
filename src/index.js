@@ -22,7 +22,7 @@ app.use("/login", loginRoute);
 // ROUTES
 app.get("/", (req, res) => {
   console.log(req);
-  res.send("Hello this is movie API");
+  res.send("Hello this is knowledge-hub API");
 });
 
 // mongoose.connect( process.env.DB_CONNECTION,
