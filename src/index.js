@@ -21,7 +21,8 @@ app.use("/login", loginRoute);
 
 // ROUTES
 app.get("/", (req, res) => {
-  res.send("Hello this is movie API");
+  console.log(req);
+  res.send("Hello this is knowledge-hub API");
 });
 
 // mongoose.connect( process.env.DB_CONNECTION,
@@ -36,4 +37,4 @@ app.get("/", (req, res) => {
 //SERVER
 const port = process.env.PORT || 1337;
 app.listen(port);
-console.log("server listening at port 3002");
+console.log("server listening at port " + process.env.PORT);
