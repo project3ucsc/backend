@@ -6,10 +6,11 @@ const { SHA256 } = require("crypto-js");
 const { secret } = require("../helpers/config");
 
 async function authenticate({ username, password }) {
+  const hashpass = SHA256(password).toString();
   const user = await prisma.user.findFirst({
     where: {
       username: username,
-      password: password,
+      password: hashpass,
     },
   });
 
@@ -29,7 +30,7 @@ async function register(values) {
       email: values.email,
     },
   });
-  if (userwiththatemail) throw "Email already exists";
+  if (userwiththatemail) throw Error("Email already exists");
 
   // only student account will actived by defuult
   const status =
@@ -44,7 +45,7 @@ async function register(values) {
     const school = await prisma.school.create({
       data: {
         name: values.schoolname,
-        address: values.schooladdress,
+        address: values.schooladr,
       },
     });
     const user = await prisma.user.create({

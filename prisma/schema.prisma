@@ -12,8 +12,8 @@ model user {
   username               String           @db.VarChar(20)
   password               String           @db.VarChar(64)
   email                  String           @unique @db.VarChar(100)
-  phone                  String           @db.VarChar(12)
-  gender                 String           @db.Char(1)
+  phone                  String?          @db.VarChar(12)
+  gender                 String?          @db.Char(1)
   role                   user_role        @default(STUDENT)
   acc_status             acc_status       @default(INITIAL)
   school_id              Int
@@ -30,8 +30,6 @@ model studentdetail {
   id      Int @id @default(autoincrement())
   user_id Int
   classid Int
-
-
 
   classroom    classroom      @relation(fields: [classid], references: [id])
   user         user           @relation(fields: [user_id], references: [id])
