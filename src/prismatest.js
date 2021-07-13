@@ -5,20 +5,21 @@ const prisma = new PrismaClient();
 async function main() {
   // const scl = await prisma.school.create({
   //   data: {
-  //     name: "Bandaragama Central College",
-  //     address: "Bandaragama",
+  //     name: "Ananda College",
+  //     address: "Colomobo 10",
   //   },
   // });
   // console.log(scl);
 
   // const u = await prisma.user.create({
   //   data: {
-  //     username: "lakshan",
-  //     email: "lakshansandaruwan1998@gmail.com",
-  //     password: "1234",
+  //     username: "teacher",
+  //     email: "klkjkjh@gmail.com",
+  //     password:
+  //       "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
   //     acc_status: acc_status.ACTIVE,
-  //     role: user_role.STUDENT,
-  //     school_id: 1,
+  //     role: user_role.TEACHER,
+  //     school_id: 2,
   //   },
   // });
 
