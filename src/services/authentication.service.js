@@ -5,22 +5,22 @@ const { SHA256 } = require("crypto-js");
 
 const { secret } = require("../helpers/config");
 
-async function authenticate({ username, password }) {
+async function authenticate({ email, password }) {
   const hashpass = SHA256(password).toString();
   const user = await prisma.user.findFirst({
     where: {
-      username: username,
+      email: email,
       password: hashpass,
     },
   });
 
   if (!user) throw "Username password incorrect";
 
-  const token = jwt.sign({ sub: user.username }, "lakshan", {
+  const token = jwt.sign({ sub: user.email }, "lakshan", {
     expiresIn: "7d",
   });
-  const { id, role } = user;
-  return { id, username, role, token };
+  const { id, username, role, school_id } = user;
+  return { id, username, email, role, token, school_id };
 }
 
 async function register(values) {
