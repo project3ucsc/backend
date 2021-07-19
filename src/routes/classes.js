@@ -2,24 +2,14 @@ const express = require("express");
 const Router = express.Router();
 const classservice = require("../services/classes.service");
 
-const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
-
-Router.get("/", async (req, res) => {
-  try {
-    const users = await User.find();
-    res.json(users);
-  } catch (error) {
-    res.json({ err: error });
-  }
-});
-
 Router.post("/addall/:sclid", async (req, res) => {
   try {
     const data = await classservice.addall(req.body, req.params.sclid);
     res.json(data);
-  } catch (error) {
-    res.json({ err: error });
+  } catch (err) {
+    res
+      .status(err.status || 500)
+      .json({ status: err.status, message: err.message });
   }
 });
 
@@ -28,8 +18,10 @@ Router.get("/num/:sclid", async (req, res) => {
   try {
     const data = await classservice.getno_of_classes(req.params.sclid);
     res.json(data);
-  } catch (error) {
-    res.json({ err: error });
+  } catch (err) {
+    res
+      .status(err.status || 500)
+      .json({ status: err.status, message: err.message });
   }
 });
 
@@ -41,8 +33,10 @@ Router.get("/getdetails/:school/:grade/:classno", async (req, res) => {
       req.params.classno
     );
     res.json(data);
-  } catch (error) {
-    res.json({ err: error });
+  } catch (err) {
+    res
+      .status(err.status || 500)
+      .json({ status: err.status, message: err.message });
   }
 });
 

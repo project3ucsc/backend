@@ -14,7 +14,7 @@ async function authenticate({ email, password }) {
     },
   });
 
-  if (!user) throw "Username password incorrect";
+  if (!user) throw { status: 500, message: "Username password incorrect" };
 
   const token = jwt.sign({ sub: user.email }, "lakshan", {
     expiresIn: "7d",
@@ -30,7 +30,7 @@ async function register(values) {
       email: values.email,
     },
   });
-  if (userwiththatemail) throw Error("Email already exists");
+  if (userwiththatemail) throw { status: 500, message: "Email already exists" };
 
   // only student account will actived by defuult
   const status =
@@ -60,9 +60,9 @@ async function register(values) {
         school_id: school.id,
       },
     });
-    return user
-      ? { status: "success", acc_status: user.acc_status }
-      : { status: "failed" };
+
+    if (!user) throw { status: 500, message: "Registration Falied" };
+    return { status: "success", acc_status: user.acc_status };
   } else {
     const user = await prisma.user.create({
       data: {
@@ -77,9 +77,8 @@ async function register(values) {
       },
     });
 
-    return user
-      ? { status: "success", acc_status: user.acc_status }
-      : { status: "failed" };
+    if (!user) throw { status: 500, message: "Registration Falied" };
+    return { status: "success", acc_status: user.acc_status };
   }
 }
 
@@ -90,6 +89,8 @@ async function getschools() {
       name: true,
     },
   });
+  if (!schools) throw { status: 500, message: "Something went wrong" };
+
   return schools;
 }
 

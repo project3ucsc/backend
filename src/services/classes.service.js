@@ -14,7 +14,8 @@ async function addall(values, schoolid) {
       },
     });
     console.log(schoolsectiondetail);
-    if (!schoolsectiondetail) console.log("err scldetail");
+
+    if (!schoolsectiondetail) throw { status: 500, message: "Proccess failed" };
     for (let index = 0; index < count; index++) {
       let i = index + 1;
       const cls = await prisma.classroom.create({
@@ -24,12 +25,13 @@ async function addall(values, schoolid) {
           name: i.toString(),
         },
       });
-      if (!cls) console.log("err");
+      if (!cls)
+        throw { status: 500, message: "Proccess failed when creating classes" };
     }
   }
 
   console.log("-------------------");
-  return { succes: "sefse" };
+  return { succes: "200" };
 }
 
 async function getno_of_classes(schoolid) {
@@ -49,7 +51,7 @@ async function getno_of_classes(schoolid) {
       },
     },
   });
-  if (!schoolsectiondetail) throw "err 404";
+  if (!schoolsectiondetail) throw { status: 404, message: "Details Not Found" };
   return schoolsectiondetail;
 }
 
@@ -61,7 +63,9 @@ async function getdetails(schoolid, grade, name) {
         grade: grade,
       },
     });
-    console.log(subjects);
+
+    if (!subjects) throw { status: 500, message: "Proccess failed" };
+
     const teachers = await prisma.user.findMany({
       where: {
         AND: {
@@ -75,7 +79,8 @@ async function getdetails(schoolid, grade, name) {
         username: true,
       },
     });
-    console.log(teachers);
+
+    if (!teachers) throw { status: 500, message: "Proccess failed" };
 
     const allsubjectdetails = await prisma.classroom.findFirst({
       where: {
@@ -110,8 +115,7 @@ async function getdetails(schoolid, grade, name) {
 
     return { subjects, teachers, allsubjectdetails };
   } catch (error) {
-    console.log(err);
-    return error;
+    throw error;
   }
 }
 

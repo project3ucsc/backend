@@ -9,8 +9,10 @@ Router.get("/", async (req, res) => {
     const freeprogs = await prisma.freeprogs.findMany({});
 
     res.json(freeprogs);
-  } catch (error) {
-    res.json({ err: error });
+  } catch (err) {
+    res
+      .status(err.status || 500)
+      .json({ status: err.status, message: err.message });
   }
 });
 

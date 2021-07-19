@@ -4,25 +4,37 @@ const authservice = require("../services/authentication.service");
 
 const Route = Router();
 
-Route.post("/", (req, res, next) => {
-  authservice
-    .authenticate(req.body)
-    .then((user) => res.json(user))
-    .catch(next);
+Route.post("/", async (req, res) => {
+  try {
+    const user = await authservice.authenticate(req.body);
+    res.json(user);
+  } catch (err) {
+    res
+      .status(err.status || 500)
+      .json({ status: err.status, message: err.message });
+  }
 });
 
-Route.post("/register", (req, res, next) => {
-  authservice
-    .register(req.body)
-    .then((user) => res.json(user))
-    .catch(next);
+Route.post("/register", async (req, res) => {
+  try {
+    const user = await authservice.register(req.body);
+    res.json(user);
+  } catch (err) {
+    res
+      .status(err.status || 500)
+      .json({ status: err.status, message: err.message });
+  }
 });
 
-Route.get("/register/school", (req, res, next) => {
-  authservice
-    .getAllSchools()
-    .then((schools) => res.json(schools))
-    .catch(next);
+Route.get("/register/school", async (req, res) => {
+  try {
+    const schools = await authservice.getAllSchools();
+    res.json(schools);
+  } catch (err) {
+    res
+      .status(err.status || 500)
+      .json({ status: err.status, message: err.message });
+  }
 });
 
 module.exports = Route;
