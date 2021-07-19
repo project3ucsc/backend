@@ -15,8 +15,14 @@ app.use(jwt());
 // Route import
 // const userRoute = require('./routes/user')
 const loginRoute = require("./routes/login");
+const classesRoute = require("./routes/classes");
+const freeprogRoute = require("./routes/freeprog");
+const userRoute = require("./routes/user");
 
 app.use("/login", loginRoute);
+app.use("/classes", classesRoute);
+app.use("/freeprog", freeprogRoute);
+app.use("/user", userRoute);
 // app.use('/user', userRoute)
 
 // ROUTES

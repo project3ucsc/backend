@@ -57,14 +57,23 @@ model classroom {
 }
 
 model school {
-  id                   Int         @id @default(autoincrement())
-  name                 String      @db.VarChar(150)
-  address              String      @db.VarChar(150)
-  no_of_primaryclasses Int?        @default(0)
-  no_of_olclasses      Int?        @default(0)
-  no_of_almaths        Int?        @default(0)
-  classroom            classroom[]
-  user                 user[]
+  id                  Int                   @id @default(autoincrement())
+  name                String                @db.VarChar(150)
+  address             String                @db.VarChar(150)
+  isconfig            Boolean               @default(false)
+  classroom           classroom[]
+  user                user[]
+  schoolsectiondetail schoolsectiondetail[]
+}
+
+model schoolsectiondetail {
+  id         Int    @id @default(autoincrement())
+  grade      grade
+  classcount Int
+  school_id  Int
+  school     school @relation(fields: [school_id], references: [id])
+
+
 }
 
 model subject {
