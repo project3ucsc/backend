@@ -96,33 +96,83 @@ async function getdetails(schoolid, grade, name) {
         subject_detail: {
           select: {
             id: true,
-            subject: {
-              select: {
-                id: true,
-                name: true,
-              },
-            },
-            teacher: {
-              select: {
-                id: true,
-                username: true,
-              },
-            },
+            subjectid: true,
+            teacher_id: true,
           },
         },
       },
     });
+    // select: {
+    //   id: true,
 
+    //   subject_detail: {
+    //     select: {
+    //       id: true,
+    //       subject: {
+    //         select: {
+    //           id: true,
+    //           name: true,
+    //         },
+    //       },
+    //       teacher: {
+    //         select: {
+    //           id: true,
+    //           username: true,
+    //         },
+    //       },
+    //     },
+    //   },
+    // },
     return { subjects, teachers, allsubjectdetails };
   } catch (error) {
     throw error;
   }
 }
 
+async function addSubjectDetail({ classroomid, subject, teacher }) {
+  const subjectdetail = await prisma.subject_detail.create({
+    data: {
+      classid: classroomid,
+      subjectid: subject,
+      teacher_id: teacher,
+      tsid: 3,
+    },
+  });
+  if (!subjectdetail) throw { status: 500, message: "Process Failed" };
+  return subjectdetail;
+}
+
+async function deleteSubjectDetail(sdid) {
+  const deletedsubjectdetail = await prisma.subject_detail.delete({
+    where: {
+      id: sdid,
+    },
+  });
+  if (!deletedsubjectdetail) throw { status: 500, message: "Process Failed" };
+  return deletedsubjectdetail;
+}
+
+async function patchSubjectDetail(sdid, data) {
+  const patchedsubjectdetail = await prisma.subject_detail.update({
+    where: {
+      id: sdid,
+    },
+    data: {
+      subjectid: data.subject,
+      teacher_id: data.teacher,
+    },
+  });
+  if (!patchedsubjectdetail) throw { status: 500, message: "Process Failed" };
+  return patchedsubjectdetail;
+}
+
 const classservice = {
   addall,
   getno_of_classes,
   getdetails,
+  addSubjectDetail,
+  deleteSubjectDetail,
+  patchSubjectDetail,
 };
 
 module.exports = classservice;
