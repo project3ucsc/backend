@@ -8,15 +8,17 @@ datasource db {
 }
 
 model user {
-  id                     Int                    @id @default(autoincrement())
-  username               String                 @db.VarChar(20)
-  password               String                 @db.VarChar(64)
-  email                  String                 @unique @db.VarChar(100)
-  phone                  String?                @db.VarChar(12)
-  gender                 String?                @db.Char(1)
-  role                   user_role              @default(STUDENT)
-  acc_status             acc_status             @default(INITIAL)
-  school_id              Int
+  id         Int        @id @default(autoincrement())
+  username   String     @db.VarChar(20)
+  password   String     @db.VarChar(64)
+  email      String     @unique @db.VarChar(100)
+  phone      String?    @db.VarChar(12)
+  gender     String?    @db.Char(1)
+  role       user_role  @default(STUDENT)
+  acc_status acc_status @default(INITIAL)
+  school_id  Int
+
+
   school                 school                 @relation(fields: [school_id], references: [id])
   teacher_subject_detail subject_detail[]
   teacher_relief_period  relief_period[]
@@ -39,11 +41,13 @@ model studentdetail {
 }
 
 model optionalsubs {
-  id               Int           @id @default(autoincrement())
+  id               Int @id @default(autoincrement())
   studentdetail_id Int
   subject_id       Int
-  studentdetail    studentdetail @relation(fields: [studentdetail_id], references: [id])
-  subject          subject       @relation(fields: [subject_id], references: [id])
+
+
+  studentdetail studentdetail @relation(fields: [studentdetail_id], references: [id])
+  subject       subject       @relation(fields: [subject_id], references: [id])
 }
 
 model classroom {
@@ -52,9 +56,10 @@ model classroom {
   name            String @db.Char(1)
   classteacher_id Int?
   school_id       Int
-  school          school @relation(fields: [school_id], references: [id])
-  user            user?  @relation(fields: [classteacher_id], references: [id])
 
+
+  school         school           @relation(fields: [school_id], references: [id])
+  user           user?            @relation(fields: [classteacher_id], references: [id])
   studentdetail  studentdetail[]
   subject_detail subject_detail[]
   time_slot      time_slot[]
@@ -63,10 +68,13 @@ model classroom {
 }
 
 model school {
-  id                  Int                   @id @default(autoincrement())
-  name                String                @db.VarChar(150)
-  address             String                @db.VarChar(150)
-  isconfig            Boolean               @default(false)
+  id       Int     @id @default(autoincrement())
+  name     String  @db.VarChar(150)
+  address  String  @db.VarChar(150)
+  isconfig Boolean @default(false)
+
+
+
   classroom           classroom[]
   user                user[]
   schoolsectiondetail schoolsectiondetail[]
@@ -74,32 +82,38 @@ model school {
 }
 
 model schoolsectiondetail {
-  id         Int    @id @default(autoincrement())
+  id         Int   @id @default(autoincrement())
   grade      grade
   classcount Int
   school_id  Int
-  school     school @relation(fields: [school_id], references: [id])
+
+
+  school school @relation(fields: [school_id], references: [id])
 
 
 }
 
 model subject {
-  id             Int              @id @default(autoincrement())
-  code           String           @db.VarChar(6)
-  grade          grade
-  subjectgroup   subjectgroup
-  name           String           @db.VarChar(20)
-  subject_detail subject_detail[]
+  id           Int          @id @default(autoincrement())
+  code         String       @db.VarChar(6)
+  grade        grade
+  subjectgroup subjectgroup
+  name         String       @db.VarChar(20)
 
-  optionalsubs optionalsubs[]
+
+  subject_detail subject_detail[]
+  optionalsubs   optionalsubs[]
 }
 
 model subject_detail {
-  id             Int             @unique @default(autoincrement())
-  classid        Int
-  subjectid      Int
-  tsid           Int
-  teacher_id     Int
+  id         Int @unique @default(autoincrement())
+  classid    Int
+  subjectid  Int
+  tsid       Int
+  teacher_id Int
+
+
+
   teacher        user            @relation(fields: [teacher_id], references: [id])
   classroom      classroom       @relation(fields: [classid], references: [id])
   subject        subject         @relation(fields: [subjectid], references: [id])
@@ -113,12 +127,14 @@ model subject_detail {
 }
 
 model time_slot {
-  id             Int            @id @default(autoincrement())
-  weekday        Int
-  class_id       Int
-  sdid           Int
-  peroid_id      Int
-  teacher_id     Int
+  id         Int @id @default(autoincrement())
+  weekday    Int
+  class_id   Int
+  sdid       Int
+  peroid_id  Int
+  teacher_id Int
+
+
   teacher        user           @relation(fields: [teacher_id], references: [id])
   classroom      classroom      @relation(fields: [class_id], references: [id])
   subject_detail subject_detail @relation(fields: [sdid], references: [id])
@@ -134,17 +150,21 @@ model period_time {
   endtime             DateTime            @db.Time(0)
   period_time_section period_time_section
   school_id           Int
-  school              school              @relation(fields: [school_id], references: [id])
-  time_slot           time_slot[]
+
+
+  school    school      @relation(fields: [school_id], references: [id])
+  time_slot time_slot[]
 
   @@map("period time")
 }
 
 model relief_period {
-  id             Int            @id @default(autoincrement())
-  sdid           Int
+  id         Int @id @default(autoincrement())
+  sdid       Int
+  teacher_id Int
+
+
   subject_detail subject_detail @relation(fields: [sdid], references: [id])
-  teacher_id     Int
   teacher        user           @relation(fields: [teacher_id], references: [id])
 
   @@map("relief period")
