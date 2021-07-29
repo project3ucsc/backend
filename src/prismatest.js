@@ -5,7 +5,6 @@ const {
   grade,
   subjectgroup,
 } = require("@prisma/client");
-const { sectionmap } = require("./helpers/config");
 
 const prisma = new PrismaClient();
 // "nodemon": "^2.0.7"
@@ -73,7 +72,6 @@ async function main() {
   //     },
   //   ],
   // });
-
   // const u = await prisma.subject.createMany({
   //   data: [
   //     {
@@ -372,7 +370,6 @@ async function main() {
   // },
   //   ],
   // });
-
   // const user = await prisma.subject_detail.create({
   //   data: {
   //     classid: 1,
@@ -381,7 +378,6 @@ async function main() {
   //     tsid: 2,
   //   },
   // });
-
   // const user = await prisma.freeprogs.createMany({
   //   data: [
   //     {
@@ -449,78 +445,8 @@ async function main() {
   //     },
   //   ],
   // });
-
-  const grad = "G12MATH";
-
-  const classdetail = await prisma.classroom.findFirst({
-    where: {
-      AND: {
-        school_id: 1,
-        grade: grad,
-        name: "1",
-      },
-    },
-    select: {
-      id: true,
-
-      subject_detail: {
-        select: {
-          id: true,
-          teacher_id: true,
-          subject: {
-            select: {
-              name: true,
-            },
-          },
-        },
-      },
-    },
-  });
-
-  const section = sectionmap.get(grad);
-
   // get the periods in school , section
-  const periods = await prisma.period_time.findMany({
-    where: {
-      school_id: 1,
-      period_time_section: section,
-    },
-    select: {
-      id: true,
-      starttime: true,
-      endtime: true,
-    },
-    orderBy: {
-      starttime: "asc",
-    },
-  });
-  // console.log(periods);
-
-  var timeslotdata = [];
-
-  // get the timeslot for each periods (max timeslot - 5)
-  for (let index = 0; index < periods.length; index++) {
-    const period = periods[index];
-    const timeslots = await prisma.time_slot.findMany({
-      where: {
-        peroid_id: period.id,
-        class_id: classdetail.id,
-      },
-      select: {
-        id: true,
-        teacher_id: true,
-        sdid: true,
-        weekday: true,
-      },
-      orderBy: {
-        weekday: "asc",
-      },
-    });
-    timeslotdata.push({ period, timeslots });
-  }
-  const data = { classdetail, timeslotdata };
-  console.log(JSON.stringify(data));
-
+  // console.log(new Date("1970-01-01T03:40:00.000Z").toLocaleTimeString());
   // console.log(period[0].starttime <= period[0].endtime);
 }
 main()
