@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node ./src/index.js",
     "dev": "nodemon ./src/index.js",
-    "prisma": "nodemon ./src/prismatest.js"
+    "ps": "nodemon ./src/prismatest.js"
   },
   "author": "",
   "license": "ISC",

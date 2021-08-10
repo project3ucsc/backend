@@ -5,6 +5,7 @@ const {
   grade,
   subjectgroup,
 } = require("@prisma/client");
+const { sectionmap } = require("./helpers/config");
 
 const prisma = new PrismaClient();
 // "nodemon": "^2.0.7"
@@ -448,6 +449,11 @@ async function main() {
   // get the periods in school , section
   // console.log(new Date("1970-01-01T03:40:00.000Z").toLocaleTimeString());
   // console.log(period[0].starttime <= period[0].endtime);
+
+
+
+  
+
 }
 main()
   .catch((e) => {

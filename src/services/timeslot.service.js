@@ -1,7 +1,73 @@
-const { sectionmap } = require("../helpers/config");
-
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+
+const { sectionmap } = require("../helpers/config");
+async function getTimeSlotsForStudent(schoolid, studentid) {
+  // const grade = "G12MATH";
+  const studentdetail = await prisma.studentdetail.findFirst({
+    where: {
+      user_id: studentid,
+    },
+    select: {
+      classroom: {
+        select: {
+          id: true,
+          grade: true,
+        },
+      },
+    },
+  });
+  if (!studentdetail)
+    throw { status: 500, message: "StudentDetails Not Found" };
+
+  // console.log(studentdetail);
+
+  const section = sectionmap.get(studentdetail.classroom.grade);
+  // get the periods in school , section
+  const periods = await prisma.period_time.findMany({
+    where: {
+      school_id: schoolid,
+      period_time_section: section,
+    },
+    select: {
+      id: true,
+      starttime: true,
+      endtime: true,
+    },
+    orderBy: {
+      starttime: "asc",
+    },
+  });
+  if (!periods) throw { status: 500, message: "Periods Not Found" };
+
+  var timeslotdata = [];
+  // get the timeslot for each periods (max timeslot - 5)
+  for (let index = 0; index < periods.length; index++) {
+    const period = periods[index];
+    const timeslots = await prisma.time_slot.findMany({
+      where: {
+        peroid_id: period.id,
+        class_id: studentdetail.classroom.id,
+      },
+      select: {
+        weekday: true,
+        subject_detail: {
+          select: {
+            subject: {
+              select: { name: true },
+            },
+          },
+        },
+      },
+      orderBy: {
+        weekday: "asc",
+      },
+    });
+    timeslotdata.push({ period, timeslots });
+  }
+
+  return timeslotdata;
+}
 
 async function getTimeSlotsForSclAdmin(schoolid, grade, classname) {
   // const grade = "G12MATH";
@@ -36,7 +102,7 @@ async function getTimeSlotsForSclAdmin(schoolid, grade, classname) {
   // get the periods in school , section
   const periods = await prisma.period_time.findMany({
     where: {
-      school_id: 1,
+      school_id: schoolid,
       period_time_section: section,
     },
     select: {
@@ -179,10 +245,21 @@ async function isConflictsWithTeacher(data, schoolid) {
   return conflicts.length !== 0;
 }
 
+async function deleteTimeslot(ts_id) {
+  const deletedts = await prisma.time_slot.delete({
+    where: {
+      id: ts_id,
+    },
+  });
+  return deletedts;
+}
+
 const timeslotservice = {
   getTimeSlotsForSclAdmin,
+  getTimeSlotsForStudent,
   createTimeslot,
   updateTimeslot,
+  deleteTimeslot,
 };
 
 module.exports = timeslotservice;
