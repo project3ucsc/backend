@@ -25,6 +25,18 @@ Router.get("/num/:sclid", async (req, res) => {
   }
 });
 
+// return subject details for clss
+Router.get("/getSubDetailsforTeacher/:userid", async (req, res) => {
+  try {
+    const data = await classservice.getSubDetailsForteacher(req.params.userid);
+    res.json(data);
+  } catch (err) {
+    res
+      .status(err.status || 500)
+      .json({ status: err.status, message: err.message });
+  }
+});
+
 Router.get("/getdetails/:school/:grade/:classno", async (req, res) => {
   try {
     const data = await classservice.getdetails(

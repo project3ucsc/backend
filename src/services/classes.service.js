@@ -34,6 +34,33 @@ async function addall(values, schoolid) {
   return { succes: "200" };
 }
 
+async function getSubDetailsForteacher(userid) {
+  const subs = await prisma.subject_detail.findMany({
+    where: {
+      teacher_id: parseInt(userid),
+    },
+    select: {
+      id: true,
+      subject: {
+        select: {
+          name: true,
+        },
+      },
+      classroom: {
+        select: {
+          grade: true,
+          name: true,
+          classteacher_id: true,
+        },
+      },
+    },
+  });
+
+  if (!subs) throw { status: 404, message: "no data" };
+
+  return subs;
+}
+
 async function getno_of_classes(schoolid) {
   const schoolsectiondetail = await prisma.school.findFirst({
     where: {
@@ -169,6 +196,7 @@ async function patchSubjectDetail(sdid, data) {
 const classservice = {
   addall,
   getno_of_classes,
+  getSubDetailsForteacher,
   getdetails,
   addSubjectDetail,
   deleteSubjectDetail,
