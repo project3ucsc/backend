@@ -114,16 +114,42 @@ model subject_detail {
 
 
 
-  teacher        user            @relation(fields: [teacher_id], references: [id])
-  classroom      classroom       @relation(fields: [classid], references: [id])
-  subject        subject         @relation(fields: [subjectid], references: [id])
-  time_slot      time_slot[]
-  quiz           quiz[]
-  relief_periods relief_period[]
+  teacher          user               @relation(fields: [teacher_id], references: [id])
+  classroom        classroom          @relation(fields: [classid], references: [id])
+  subject          subject            @relation(fields: [subjectid], references: [id])
+  time_slot        time_slot[]
+  quiz             quiz[]
+  relief_periods   relief_period[]
+  resource_section resource_section[]
+
 
   @@id([classid, subjectid])
   @@index([subjectid], name: "subjectid")
   @@map("subject detail")
+}
+
+model resource_section {
+  id   Int    @unique @default(autoincrement())
+  name String @db.VarChar(150)
+  sdid Int
+
+  subject_detail subject_detail @relation(fields: [sdid], references: [id])
+
+  resource_details resource_detail[]
+  @@map("resource section")
+}
+
+model resource_detail {
+  id         Int    @unique @default(autoincrement())
+  name       String @db.VarChar(150)
+  section_id Int
+  type       String @db.VarChar(6)
+  filename   String @db.VarChar(150)
+
+  resource_section resource_section @relation(fields: [section_id], references: [id])
+
+
+  @@map("resource detail")
 }
 
 model time_slot {
