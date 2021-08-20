@@ -17,6 +17,21 @@ Router.get("/teacher/:sdid/:teacherid", async (req, res) => {
   }
 });
 
+// return subject detail al information for teacher
+Router.get("/student/:sdid/:stuid", async (req, res) => {
+  try {
+    const data = await subjectdetailservice.getSubDetailAllDataForStudent(
+      req.params.sdid,
+      req.params.stuid
+    );
+    res.json(data);
+  } catch (err) {
+    res
+      .status(err.status || 500)
+      .json({ status: err.status, message: err.message });
+  }
+});
+
 // add resource_section to subject detail
 Router.post("/section", async (req, res) => {
   try {

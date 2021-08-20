@@ -34,7 +34,7 @@ async function addall(values, schoolid) {
   return { succes: "200" };
 }
 
-async function getSubDetailsForteacher(userid) {
+async function getSubDetailsForteacherRouter(userid) {
   const subs = await prisma.subject_detail.findMany({
     where: {
       teacher_id: parseInt(userid),
@@ -51,6 +51,35 @@ async function getSubDetailsForteacher(userid) {
           grade: true,
           name: true,
           classteacher_id: true,
+        },
+      },
+    },
+  });
+
+  if (!subs) throw { status: 404, message: "no data" };
+
+  return subs;
+}
+
+async function getSubDetailsForStudentRouter(userid) {
+  const studetail = await prisma.studentdetail.findFirst({
+    where: {
+      user_id: parseInt(userid),
+    },
+  });
+
+  if (!studetail)
+    throw { status: 404, message: "Student has not enrolled to a class" };
+
+  const subs = await prisma.subject_detail.findMany({
+    where: {
+      classid: studetail.classid,
+    },
+    select: {
+      id: true,
+      subject: {
+        select: {
+          name: true,
         },
       },
     },
@@ -196,7 +225,8 @@ async function patchSubjectDetail(sdid, data) {
 const classservice = {
   addall,
   getno_of_classes,
-  getSubDetailsForteacher,
+  getSubDetailsForteacherRouter,
+  getSubDetailsForStudentRouter,
   getdetails,
   addSubjectDetail,
   deleteSubjectDetail,

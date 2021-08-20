@@ -25,10 +25,26 @@ Router.get("/num/:sclid", async (req, res) => {
   }
 });
 
-// return subject details for clss
+// return subject details for teacherRouter
 Router.get("/getSubDetailsforTeacher/:userid", async (req, res) => {
   try {
-    const data = await classservice.getSubDetailsForteacher(req.params.userid);
+    const data = await classservice.getSubDetailsForteacherRouter(
+      req.params.userid
+    );
+    res.json(data);
+  } catch (err) {
+    res
+      .status(err.status || 500)
+      .json({ status: err.status, message: err.message });
+  }
+});
+
+// return subject details for teacherRouter
+Router.get("/getSubDetailsforStudent/:userid", async (req, res) => {
+  try {
+    const data = await classservice.getSubDetailsForStudentRouter(
+      req.params.userid
+    );
     res.json(data);
   } catch (err) {
     res

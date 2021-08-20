@@ -46,6 +46,53 @@ async function getSubDetailAllData(sdid, userid) {
   return subject_detail;
 }
 
+async function getSubDetailAllDataForStudent(sdid, userid) {
+  const subject_detail = await prisma.subject_detail.findFirst({
+    where: {
+      id: parseInt(sdid),
+    },
+    select: {
+      id: true,
+      classid: true,
+      subject: {
+        select: {
+          name: true,
+        },
+      },
+      resource_section: {
+        select: {
+          id: true,
+          name: true,
+          resource_details: {
+            select: {
+              id: true,
+              filename: true,
+              name: true,
+              type: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!subject_detail) throw { status: 404, message: "no data" };
+
+  const studetail = await prisma.studentdetail.findFirst({
+    where: {
+      user_id: parseInt(userid),
+    },
+  });
+
+  if (!studetail)
+    throw { status: 404, message: "Student has not enrolled to a class" };
+
+  if (studetail.classid !== subject_detail.classid)
+    throw { status: 403, message: "Unauthorized to view this" };
+
+  return subject_detail;
+}
+
 async function addResouceSection({ sdid, title }) {
   const new_resource_section = await prisma.resource_section.create({
     data: {
@@ -112,6 +159,7 @@ async function updateResouceName({ id, name }) {
 
 const subjectdetailservice = {
   getSubDetailAllData,
+  getSubDetailAllDataForStudent,
   addResouceSection,
   deleteResouceSection,
   addResouce,
