@@ -93,4 +93,18 @@ Router.delete("/resource/:id", async (req, res) => {
   }
 });
 
+Router.get("/getMeetingDetails/:sdid/:day", async (req, res) => {
+  try {
+    const data = await subjectdetailservice.getMeetingDetails(
+      parseInt(req.params.sdid),
+      parseInt(req.params.day)
+    );
+    res.json(data);
+  } catch (err) {
+    res
+      .status(err.status || 500)
+      .json({ status: err.status, message: err.message });
+  }
+});
+
 module.exports = Router;
