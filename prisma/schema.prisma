@@ -69,8 +69,8 @@ model classroom {
 
 model school {
   id       Int     @id @default(autoincrement())
-  name     String  @db.VarChar(150)
-  address  String  @db.VarChar(150)
+  name     String  
+  address  String  
   isconfig Boolean @default(false)
 
 
@@ -130,7 +130,7 @@ model subject_detail {
 
 model resource_section {
   id   Int    @unique @default(autoincrement())
-  name String @db.VarChar(150)
+  name String 
   sdid Int
 
   subject_detail subject_detail @relation(fields: [sdid], references: [id])
@@ -141,10 +141,10 @@ model resource_section {
 
 model resource_detail {
   id         Int    @unique @default(autoincrement())
-  name       String @db.VarChar(150)
+  name       String
   section_id Int
   type       String @db.VarChar(6)
-  filename   String @db.VarChar(150)
+  filename   String 
 
   resource_section resource_section @relation(fields: [section_id], references: [id])
 
@@ -153,18 +153,22 @@ model resource_detail {
 }
 
 model time_slot {
-  id         Int @id @default(autoincrement())
-  weekday    Int
-  class_id   Int
-  sdid       Int
-  peroid_id  Int
-  teacher_id Int
-
+  id            Int      @id @default(autoincrement())
+  weekday       Int
+  class_id      Int
+  sdid          Int
+  peroid_id     Int
+  teacher_id    Int
+  meetingurl    String?   @default("NA")
+  lastupdated   DateTime? @db.DateTime
+  isTimeChanged Boolean  @default(false)
 
   teacher        user           @relation(fields: [teacher_id], references: [id])
   classroom      classroom      @relation(fields: [class_id], references: [id])
   subject_detail subject_detail @relation(fields: [sdid], references: [id])
   period_time    period_time    @relation(fields: [peroid_id], references: [id])
+
+  reshceduled_timeslots reshceduled_timeslots[]
 
   @@index([sdid], name: "sdid")
   @@map("time slot")
@@ -184,6 +188,17 @@ model period_time {
   @@map("period time")
 }
 
+model reshceduled_timeslots {
+  id        Int      @id @default(autoincrement())
+  tsid      Int
+  starttime DateTime
+  endtime   DateTime
+
+  time_slot time_slot @relation(fields: [tsid], references: [id])
+
+  @@map("reshceduled timeslots")
+}
+
 model relief_period {
   id         Int @id @default(autoincrement())
   sdid       Int
@@ -198,10 +213,10 @@ model relief_period {
 
 model freeprogs {
   id          Int     @id @default(autoincrement())
-  title       String  @db.VarChar(100)
-  discription String  @db.VarChar(200)
-  time        String? @db.VarChar(100)
-  imgurl      String? @db.VarChar(200)
+  title       String  
+  discription String 
+  time        String?
+  imgurl      String?
   rating      Float?
   ratecount   Int
 }
