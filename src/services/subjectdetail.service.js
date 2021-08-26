@@ -165,6 +165,7 @@ async function getMeetingDetails(sdid, day) {
         weekday: day,
       },
       select: {
+        id: true,
         weekday: true,
         meetingurl: true,
         lastupdated: true,
@@ -185,6 +186,8 @@ async function getMeetingDetails(sdid, day) {
         sdid: sdid,
       },
       select: {
+        id: true,
+
         weekday: true,
         meetingurl: true,
         lastupdated: true,
@@ -202,6 +205,22 @@ async function getMeetingDetails(sdid, day) {
   }
 }
 
+async function editMeetingUrl({ tsid, url }) {
+  const today = new Date();
+
+  const up = await prisma.time_slot.update({
+    where: {
+      id: tsid,
+    },
+    data: {
+      meetingurl: url,
+      lastupdated: today,
+    },
+  });
+  if (!up) throw { status: 500, message: "Failed to update url" };
+  return up;
+}
+
 const subjectdetailservice = {
   getSubDetailAllData,
   getSubDetailAllDataForStudent,
@@ -211,6 +230,7 @@ const subjectdetailservice = {
   deleteResouce,
   updateResouceName,
   getMeetingDetails,
+  editMeetingUrl,
 };
 
 module.exports = subjectdetailservice;

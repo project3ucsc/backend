@@ -106,5 +106,15 @@ Router.get("/getMeetingDetails/:sdid/:day", async (req, res) => {
       .json({ status: err.status, message: err.message });
   }
 });
+Router.patch("/editMeetingUrl", async (req, res) => {
+  try {
+    const data = await subjectdetailservice.editMeetingUrl(req.body);
+    res.json(data);
+  } catch (err) {
+    res
+      .status(err.status || 500)
+      .json({ status: err.status, message: err.message });
+  }
+});
 
 module.exports = Router;
