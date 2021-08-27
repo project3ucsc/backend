@@ -5,6 +5,7 @@ const {
   grade,
   subjectgroup,
 } = require("@prisma/client");
+const { sectionmap } = require("./helpers/config");
 
 const prisma = new PrismaClient();
 // "nodemon": "^2.0.7"
@@ -72,7 +73,6 @@ async function main() {
   //     },
   //   ],
   // });
-
   // const u = await prisma.subject.createMany({
   //   data: [
   //     {
@@ -273,107 +273,104 @@ async function main() {
   //       subjectgroup: subjectgroup.OL_BUCKET_2,
   //       name: "Sinhala Literature",
   //     },
-      //   {
-      //   grade: grade.G9,
-      //   code: "NULL",
-      //   subjectgroup: subjectgroup.COMP,
-      //   name: "Maths",
-      // },
-      // {
-      //   grade: grade.G9,
-      //   code: "NULL",
-      //   subjectgroup: subjectgroup.COMP,
-      //   name: "Sinhala",
-      // },
-      // {
-      //   grade: grade.G9,
-      //   code: "NULL",
-      //   subjectgroup: subjectgroup.COMP,
-      //   name: "History",
-      // },
-      // {
-      //   grade: grade.G9,
-      //   code: "NULL",
-      //   subjectgroup: subjectgroup.COMP,
-      //   name: "English",
-      // },
-      // {
-      //   grade: grade.G9,
-      //   code: "NULL",
-      //   subjectgroup: subjectgroup.COMP,
-      //   name: "Science",
-      // },
-      // {
-      //   grade: grade.G9,
-      //   code: "NULL",
-      //   subjectgroup: subjectgroup.OPTIONAL_69,
-      //   name: "Buddhism",
-      // },
-      // {
-      //   grade: grade.G9,
-      //   code: "NULL",
-      //   subjectgroup: subjectgroup.COMP,
-      //   name: "Geology",
-      // },
-      // {
-      //   grade: grade.G9,
-      //   code: "NULL",
-      //   subjectgroup: subjectgroup.COMP,
-      //   name: "Civics",
-      // },
-      // {
-      //   grade: grade.G9,
-      //   code: "NULL",
-      //   subjectgroup: subjectgroup.COMP,
-      //   name: "Health",
-      // },
-      // {
-      //   grade: grade.G9,
-      //   code: "NULL",
-      //   subjectgroup: subjectgroup.OPTIONAL_69,
-      //   name: "Eastern Music",
-      // },
-      // {
-      //   grade: grade.G9,
-      //   code: "NULL",
-      //   subjectgroup: subjectgroup.OPTIONAL_69,
-      //   name: "Western Music",
-      // },
-      // {
-      //   grade: grade.G9,
-      //   code: "NULL",
-      //   subjectgroup: subjectgroup.OPTIONAL_69,
-      //   name: "Arts",
-      // },
-      // {
-      //   grade: grade.G9,
-      //   code: "NULL",
-      //   subjectgroup: subjectgroup.OPTIONAL_69,
-      //   name: "Dancing",
-      // },
-      // {
-      //   grade: grade.G9,
-      //   code: "NULL",
-      //   subjectgroup: subjectgroup.OPTIONAL_69,
-      //   name: "Drama",
-      // },
-      // {
-      //   grade: grade.G9,
-      //   code: "NULL",
-      //   subjectgroup: subjectgroup.OPTIONAL_69,
-      //   name: "ICT",
-      // },
-      // {
-      //   grade: grade.G9,
-      //   code: "NULL",
-      //   subjectgroup: subjectgroup.OPTIONAL_69,
-      //   name: "PTS",
-      // },
+  //   {
+  //   grade: grade.G9,
+  //   code: "NULL",
+  //   subjectgroup: subjectgroup.COMP,
+  //   name: "Maths",
+  // },
+  // {
+  //   grade: grade.G9,
+  //   code: "NULL",
+  //   subjectgroup: subjectgroup.COMP,
+  //   name: "Sinhala",
+  // },
+  // {
+  //   grade: grade.G9,
+  //   code: "NULL",
+  //   subjectgroup: subjectgroup.COMP,
+  //   name: "History",
+  // },
+  // {
+  //   grade: grade.G9,
+  //   code: "NULL",
+  //   subjectgroup: subjectgroup.COMP,
+  //   name: "English",
+  // },
+  // {
+  //   grade: grade.G9,
+  //   code: "NULL",
+  //   subjectgroup: subjectgroup.COMP,
+  //   name: "Science",
+  // },
+  // {
+  //   grade: grade.G9,
+  //   code: "NULL",
+  //   subjectgroup: subjectgroup.OPTIONAL_69,
+  //   name: "Buddhism",
+  // },
+  // {
+  //   grade: grade.G9,
+  //   code: "NULL",
+  //   subjectgroup: subjectgroup.COMP,
+  //   name: "Geology",
+  // },
+  // {
+  //   grade: grade.G9,
+  //   code: "NULL",
+  //   subjectgroup: subjectgroup.COMP,
+  //   name: "Civics",
+  // },
+  // {
+  //   grade: grade.G9,
+  //   code: "NULL",
+  //   subjectgroup: subjectgroup.COMP,
+  //   name: "Health",
+  // },
+  // {
+  //   grade: grade.G9,
+  //   code: "NULL",
+  //   subjectgroup: subjectgroup.OPTIONAL_69,
+  //   name: "Eastern Music",
+  // },
+  // {
+  //   grade: grade.G9,
+  //   code: "NULL",
+  //   subjectgroup: subjectgroup.OPTIONAL_69,
+  //   name: "Western Music",
+  // },
+  // {
+  //   grade: grade.G9,
+  //   code: "NULL",
+  //   subjectgroup: subjectgroup.OPTIONAL_69,
+  //   name: "Arts",
+  // },
+  // {
+  //   grade: grade.G9,
+  //   code: "NULL",
+  //   subjectgroup: subjectgroup.OPTIONAL_69,
+  //   name: "Dancing",
+  // },
+  // {
+  //   grade: grade.G9,
+  //   code: "NULL",
+  //   subjectgroup: subjectgroup.OPTIONAL_69,
+  //   name: "Drama",
+  // },
+  // {
+  //   grade: grade.G9,
+  //   code: "NULL",
+  //   subjectgroup: subjectgroup.OPTIONAL_69,
+  //   name: "ICT",
+  // },
+  // {
+  //   grade: grade.G9,
+  //   code: "NULL",
+  //   subjectgroup: subjectgroup.OPTIONAL_69,
+  //   name: "PTS",
+  // },
   //   ],
   // });
-
-
-
   // const user = await prisma.subject_detail.create({
   //   data: {
   //     classid: 1,
@@ -382,7 +379,6 @@ async function main() {
   //     tsid: 2,
   //   },
   // });
-
   // const user = await prisma.freeprogs.createMany({
   //   data: [
   //     {
@@ -450,10 +446,14 @@ async function main() {
   //     },
   //   ],
   // });
+  // get the periods in school , section
+  // console.log(new Date("1970-01-01T03:40:00.000Z").toLocaleTimeString());
+  // console.log(period[0].starttime <= period[0].endtime);
 
-  const user1 = await prisma.subject.findMany({});
 
-  console.log(user1);
+
+  
+
 }
 main()
   .catch((e) => {

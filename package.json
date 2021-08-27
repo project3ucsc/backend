@@ -6,12 +6,12 @@
   "scripts": {
     "start": "node ./src/index.js",
     "dev": "nodemon ./src/index.js",
-    "prisma": "nodemon ./src/prismatest.js"
+    "ps": "nodemon ./src/prismatest.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@prisma/client": "^2.25.0",
+    "@prisma/client": "^2.27.0",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "crypto-js": "^4.0.0",
@@ -22,6 +22,6 @@
   },
   "devDependencies": {
     "prettier-plugin-prisma": "^0.13.2",
-    "prisma": "^2.25.0"
+    "prisma": "^2.27.0"
   }
 }

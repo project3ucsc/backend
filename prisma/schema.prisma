@@ -8,21 +8,25 @@ datasource db {
 }
 
 model user {
-  id                     Int              @id @default(autoincrement())
-  username               String           @db.VarChar(20)
-  password               String           @db.VarChar(64)
-  email                  String           @unique @db.VarChar(100)
-  phone                  String?          @db.VarChar(12)
-  gender                 String?          @db.Char(1)
-  role                   user_role        @default(STUDENT)
-  acc_status             acc_status       @default(INITIAL)
-  school_id              Int
-  school                 school           @relation(fields: [school_id], references: [id])
+  id         Int        @id @default(autoincrement())
+  username   String     @db.VarChar(20)
+  password   String     @db.VarChar(64)
+  email      String     @unique @db.VarChar(100)
+  phone      String?    @db.VarChar(12)
+  gender     String?    @db.Char(1)
+  role       user_role  @default(STUDENT)
+  acc_status acc_status @default(INITIAL)
+  school_id  Int
+
+
+  school                 school                 @relation(fields: [school_id], references: [id])
   teacher_subject_detail subject_detail[]
   teacher_relief_period  relief_period[]
+  teacher_time_slot      time_slot[]
+  classroom              classroom?
+  studentdetail          studentdetail[]
+  freeprogs_suggetions   freeprogs_suggetions[]
 
-  studentdetail        studentdetail[]
-  freeprogs_suggetions freeprogs_suggetions[]
   @@index([school_id], name: "school_id")
 }
 
@@ -37,91 +41,171 @@ model studentdetail {
 }
 
 model optionalsubs {
-  id               Int           @id @default(autoincrement())
+  id               Int @id @default(autoincrement())
   studentdetail_id Int
   subject_id       Int
-  studentdetail    studentdetail @relation(fields: [studentdetail_id], references: [id])
-  subject          subject       @relation(fields: [subject_id], references: [id])
+
+
+  studentdetail studentdetail @relation(fields: [studentdetail_id], references: [id])
+  subject       subject       @relation(fields: [subject_id], references: [id])
 }
 
 model classroom {
-  id             Int              @id @default(autoincrement())
-  grade          grade
-  name           String           @db.Char(1)
-  school_id      Int
+  id              Int    @id @default(autoincrement())
+  grade           grade
+  name            String @db.Char(1)
+  classteacher_id Int?
+  school_id       Int
+
+
   school         school           @relation(fields: [school_id], references: [id])
+  user           user?            @relation(fields: [classteacher_id], references: [id])
   studentdetail  studentdetail[]
   subject_detail subject_detail[]
+  time_slot      time_slot[]
 
   @@index([school_id], name: "school_id")
 }
 
 model school {
-  id                  Int                   @id @default(autoincrement())
-  name                String                @db.VarChar(150)
-  address             String                @db.VarChar(150)
-  isconfig            Boolean               @default(false)
+  id       Int     @id @default(autoincrement())
+  name     String  
+  address  String  
+  isconfig Boolean @default(false)
+
+
+
   classroom           classroom[]
   user                user[]
   schoolsectiondetail schoolsectiondetail[]
+  periodtimes         period_time[]
 }
 
 model schoolsectiondetail {
-  id         Int    @id @default(autoincrement())
+  id         Int   @id @default(autoincrement())
   grade      grade
   classcount Int
   school_id  Int
-  school     school @relation(fields: [school_id], references: [id])
+
+
+  school school @relation(fields: [school_id], references: [id])
 
 
 }
 
 model subject {
-  id             Int              @id @default(autoincrement())
-  code           String           @db.VarChar(6)
-  grade          grade
-  subjectgroup   subjectgroup
-  name           String           @db.VarChar(20)
-  subject_detail subject_detail[]
+  id           Int          @id @default(autoincrement())
+  code         String       @db.VarChar(6)
+  grade        grade
+  subjectgroup subjectgroup
+  name         String       @db.VarChar(20)
 
-  optionalsubs optionalsubs[]
+
+  subject_detail subject_detail[]
+  optionalsubs   optionalsubs[]
 }
 
 model subject_detail {
-  id             Int             @unique @default(autoincrement())
-  classid        Int
-  subjectid      Int
-  tsid           Int
-  teacher_id     Int
-  teacher        user            @relation(fields: [teacher_id], references: [id])
-  classroom      classroom       @relation(fields: [classid], references: [id])
-  subject        subject         @relation(fields: [subjectid], references: [id])
-  time_slot      time_slot[]
-  quiz           quiz[]
-  relief_periods relief_period[]
+  id         Int @unique @default(autoincrement())
+  classid    Int
+  subjectid  Int
+  tsid       Int
+  teacher_id Int
+
+
+
+  teacher          user               @relation(fields: [teacher_id], references: [id])
+  classroom        classroom          @relation(fields: [classid], references: [id])
+  subject          subject            @relation(fields: [subjectid], references: [id])
+  time_slot        time_slot[]
+  quiz             quiz[]
+  relief_periods   relief_period[]
+  resource_section resource_section[]
+
 
   @@id([classid, subjectid])
   @@index([subjectid], name: "subjectid")
   @@map("subject detail")
 }
 
+model resource_section {
+  id   Int    @unique @default(autoincrement())
+  name String 
+  sdid Int
+
+  subject_detail subject_detail @relation(fields: [sdid], references: [id])
+
+  resource_details resource_detail[]
+  @@map("resource section")
+}
+
+model resource_detail {
+  id         Int    @unique @default(autoincrement())
+  name       String
+  section_id Int
+  type       String @db.VarChar(6)
+  filename   String 
+
+  resource_section resource_section @relation(fields: [section_id], references: [id])
+
+
+  @@map("resource detail")
+}
+
 model time_slot {
-  id             Int               @id @default(autoincrement())
-  weekday        time_slot_weekday
-  starttime      DateTime          @db.Time(0)
-  endtime        DateTime          @db.Time(0)
-  sdid           Int
-  subject_detail subject_detail    @relation(fields: [sdid], references: [id])
+  id            Int      @id @default(autoincrement())
+  weekday       Int
+  class_id      Int
+  sdid          Int
+  peroid_id     Int
+  teacher_id    Int
+  meetingurl    String?   @default("NA")
+  lastupdated   DateTime? @db.DateTime
+  isTimeChanged Boolean  @default(false)
+
+  teacher        user           @relation(fields: [teacher_id], references: [id])
+  classroom      classroom      @relation(fields: [class_id], references: [id])
+  subject_detail subject_detail @relation(fields: [sdid], references: [id])
+  period_time    period_time    @relation(fields: [peroid_id], references: [id])
+
+  reshceduled_timeslots reshceduled_timeslots[]
 
   @@index([sdid], name: "sdid")
   @@map("time slot")
 }
 
+model period_time {
+  id                  Int                 @id @default(autoincrement())
+  starttime           DateTime            @db.Time(0)
+  endtime             DateTime            @db.Time(0)
+  period_time_section period_time_section
+  school_id           Int
+
+
+  school    school      @relation(fields: [school_id], references: [id])
+  time_slot time_slot[]
+
+  @@map("period time")
+}
+
+model reshceduled_timeslots {
+  id        Int      @id @default(autoincrement())
+  tsid      Int
+  starttime DateTime
+  endtime   DateTime
+
+  time_slot time_slot @relation(fields: [tsid], references: [id])
+
+  @@map("reshceduled timeslots")
+}
+
 model relief_period {
-  id             Int            @id @default(autoincrement())
-  sdid           Int
+  id         Int @id @default(autoincrement())
+  sdid       Int
+  teacher_id Int
+
+
   subject_detail subject_detail @relation(fields: [sdid], references: [id])
-  teacher_id     Int
   teacher        user           @relation(fields: [teacher_id], references: [id])
 
   @@map("relief period")
@@ -129,10 +213,10 @@ model relief_period {
 
 model freeprogs {
   id          Int     @id @default(autoincrement())
-  title       String  @db.VarChar(100)
-  discription String  @db.VarChar(200)
-  time        String? @db.VarChar(100)
-  imgurl      String? @db.VarChar(200)
+  title       String  
+  discription String 
+  time        String?
+  imgurl      String?
   rating      Float?
   ratecount   Int
 }
@@ -222,14 +306,10 @@ enum subjectgroup {
   TECH_IT
 }
 
-enum time_slot_weekday {
-  MON
-  TUE
-  WED
-  THU
-  FRI
-
-  @@map("time slot_weekday")
+enum period_time_section {
+  OL
+  AL
+  PRIMARY
 }
 
 enum user_role {
