@@ -8,169 +8,161 @@ datasource db {
 }
 
 model user {
-  id         Int        @id @default(autoincrement())
-  username   String     @db.VarChar(20)
-  password   String     @db.VarChar(64)
-  email      String     @unique @db.VarChar(100)
-  phone      String?    @db.VarChar(12)
-  gender     String?    @db.Char(1)
-  role       user_role  @default(STUDENT)
-  acc_status acc_status @default(INITIAL)
-  school_id  Int
-
-
+  id                     Int                    @id @default(autoincrement())
+  username               String                 @db.VarChar(20)
+  password               String                 @db.VarChar(64)
+  email                  String                 @unique @db.VarChar(100)
+  phone                  String?                @db.VarChar(12)
+  gender                 String?                @db.Char(1)
+  role                   user_role              @default(STUDENT)
+  acc_status             acc_status             @default(INITIAL)
+  school_id              Int
   school                 school                 @relation(fields: [school_id], references: [id])
-  teacher_subject_detail subject_detail[]
-  teacher_relief_period  relief_period[]
-  teacher_time_slot      time_slot[]
   classroom              classroom?
-  studentdetail          studentdetail[]
   freeprogs_suggetions   freeprogs_suggetions[]
+  teacher_relief_period  relief_period[]
+  studentdetail          studentdetail[]
+  teacher_subject_detail subject_detail[]
+  teacher_time_slot      time_slot[]
 
   @@index([school_id], name: "school_id")
 }
 
 model studentdetail {
-  id      Int @id @default(autoincrement())
-  user_id Int
-  classid Int
-
-  classroom    classroom      @relation(fields: [classid], references: [id])
-  user         user           @relation(fields: [user_id], references: [id])
+  id           Int                   @id @default(autoincrement())
+  user_id      Int
+  classid      Int
+  status       student_datail_status @default(NO_ENROll)
+  regid        String                @default("none") @db.VarChar(20)
+  classroom    classroom             @relation(fields: [classid], references: [id])
+  user         user                  @relation(fields: [user_id], references: [id])
   optionalsubs optionalsubs[]
+
+  @@index([classid], name: "classid")
+  @@index([user_id], name: "user_id")
 }
 
 model optionalsubs {
-  id               Int @id @default(autoincrement())
-  studentdetail_id Int
-  subject_id       Int
+  id               Int            @id @default(autoincrement())
+  studentdetail_id Int?
+  sd_id            Int
+  subjectgroup     subjectgroup
+  subject_detail   subject_detail @relation(fields: [sd_id], references: [id])
+  studentdetail    studentdetail? @relation(fields: [studentdetail_id], references: [id])
 
-
-  studentdetail studentdetail @relation(fields: [studentdetail_id], references: [id])
-  subject       subject       @relation(fields: [subject_id], references: [id])
+  @@index([sd_id], name: "sd_id")
+  @@index([studentdetail_id], name: "studentdetail_id")
 }
 
 model classroom {
-  id              Int    @id @default(autoincrement())
+  id              Int              @id @default(autoincrement())
   grade           grade
-  name            String @db.Char(1)
-  classteacher_id Int?
+  name            String           @db.Char(1)
   school_id       Int
-
-
-  school         school           @relation(fields: [school_id], references: [id])
-  user           user?            @relation(fields: [classteacher_id], references: [id])
-  studentdetail  studentdetail[]
-  subject_detail subject_detail[]
-  time_slot      time_slot[]
+  classteacher_id Int?             @unique
+  user            user?            @relation(fields: [classteacher_id], references: [id])
+  school          school           @relation(fields: [school_id], references: [id])
+  studentdetail   studentdetail[]
+  subject_detail  subject_detail[]
+  time_slot       time_slot[]
 
   @@index([school_id], name: "school_id")
 }
 
 model school {
-  id       Int     @id @default(autoincrement())
-  name     String  
-  address  String  
-  isconfig Boolean @default(false)
-
-
-
+  id                  Int                   @id @default(autoincrement())
+  name                String
+  address             String
+  isconfig            Boolean               @default(false)
   classroom           classroom[]
-  user                user[]
-  schoolsectiondetail schoolsectiondetail[]
   periodtimes         period_time[]
+  schoolsectiondetail schoolsectiondetail[]
+  user                user[]
 }
 
 model schoolsectiondetail {
-  id         Int   @id @default(autoincrement())
-  grade      grade
+  id         Int                       @id @default(autoincrement())
+  grade      schoolsectiondetail_grade
   classcount Int
   school_id  Int
+  school     school                    @relation(fields: [school_id], references: [id])
 
-
-  school school @relation(fields: [school_id], references: [id])
-
-
+  @@index([school_id], name: "school_id")
 }
 
 model subject {
-  id           Int          @id @default(autoincrement())
-  code         String       @db.VarChar(6)
-  grade        grade
-  subjectgroup subjectgroup
-  name         String       @db.VarChar(20)
-
-
+  id             Int                  @id @default(autoincrement())
+  code           String               @db.VarChar(6)
+  grade          subject_grade
+  subjectgroup   subject_subjectgroup
+  name           String               @db.VarChar(20)
   subject_detail subject_detail[]
-  optionalsubs   optionalsubs[]
 }
 
 model subject_detail {
-  id         Int @unique @default(autoincrement())
-  classid    Int
-  subjectid  Int
-  tsid       Int
-  teacher_id Int
-
-
-
-  teacher          user               @relation(fields: [teacher_id], references: [id])
+  id               Int                @unique @default(autoincrement())
+  classid          Int
+  subjectid        Int
+  tsid             Int
+  teacher_id       Int
   classroom        classroom          @relation(fields: [classid], references: [id])
   subject          subject            @relation(fields: [subjectid], references: [id])
-  time_slot        time_slot[]
+  teacher          user               @relation(fields: [teacher_id], references: [id])
+  optionalsubs     optionalsubs[]
   quiz             quiz[]
   relief_periods   relief_period[]
   resource_section resource_section[]
-
+  time_slot        time_slot[]
 
   @@id([classid, subjectid])
   @@index([subjectid], name: "subjectid")
+  @@index([teacher_id], name: "teacher_id")
   @@map("subject detail")
 }
 
 model resource_section {
-  id   Int    @unique @default(autoincrement())
-  name String 
-  sdid Int
-
-  subject_detail subject_detail @relation(fields: [sdid], references: [id])
-
+  id               Int               @unique @default(autoincrement())
+  name             String
+  sdid             Int
+  subject_detail   subject_detail    @relation(fields: [sdid], references: [id])
   resource_details resource_detail[]
+
+  @@index([sdid], name: "sdid")
   @@map("resource section")
 }
 
 model resource_detail {
-  id         Int    @unique @default(autoincrement())
-  name       String
-  section_id Int
-  type       String @db.VarChar(6)
-  filename   String 
-
+  id               Int              @unique @default(autoincrement())
+  name             String
+  section_id       Int
+  type             String           @db.VarChar(6)
+  filename         String
   resource_section resource_section @relation(fields: [section_id], references: [id])
 
-
+  @@index([section_id], name: "section_id")
   @@map("resource detail")
 }
 
 model time_slot {
-  id            Int      @id @default(autoincrement())
-  weekday       Int
-  class_id      Int
-  sdid          Int
-  peroid_id     Int
-  teacher_id    Int
-  meetingurl    String?   @default("NA")
-  lastupdated   DateTime? @db.DateTime
-  isTimeChanged Boolean  @default(false)
-
-  teacher        user           @relation(fields: [teacher_id], references: [id])
-  classroom      classroom      @relation(fields: [class_id], references: [id])
-  subject_detail subject_detail @relation(fields: [sdid], references: [id])
-  period_time    period_time    @relation(fields: [peroid_id], references: [id])
-
+  id                    Int                     @id @default(autoincrement())
+  weekday               Int
+  sdid                  Int
+  class_id              Int
+  peroid_id             Int
+  teacher_id            Int
+  isTimeChanged         Boolean                 @default(false)
+  lastupdated           DateTime?               @db.DateTime(0)
+  meetingurl            String?                 @default("NA")
+  classroom             classroom               @relation(fields: [class_id], references: [id])
+  period_time           period_time             @relation(fields: [peroid_id], references: [id])
+  subject_detail        subject_detail          @relation(fields: [sdid], references: [id])
+  teacher               user                    @relation(fields: [teacher_id], references: [id])
   reshceduled_timeslots reshceduled_timeslots[]
 
+  @@index([class_id], name: "class_id")
+  @@index([peroid_id], name: "peroid_id")
   @@index([sdid], name: "sdid")
+  @@index([teacher_id], name: "teacher_id")
   @@map("time slot")
 }
 
@@ -180,41 +172,40 @@ model period_time {
   endtime             DateTime            @db.Time(0)
   period_time_section period_time_section
   school_id           Int
+  school              school              @relation(fields: [school_id], references: [id])
+  time_slot           time_slot[]
 
-
-  school    school      @relation(fields: [school_id], references: [id])
-  time_slot time_slot[]
-
+  @@index([school_id], name: "school_id")
   @@map("period time")
 }
 
 model reshceduled_timeslots {
-  id        Int      @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
   tsid      Int
   starttime DateTime
   endtime   DateTime
-
   time_slot time_slot @relation(fields: [tsid], references: [id])
 
+  @@index([tsid], name: "tsid")
   @@map("reshceduled timeslots")
 }
 
 model relief_period {
-  id         Int @id @default(autoincrement())
-  sdid       Int
-  teacher_id Int
-
-
+  id             Int            @id @default(autoincrement())
+  sdid           Int
+  teacher_id     Int
   subject_detail subject_detail @relation(fields: [sdid], references: [id])
   teacher        user           @relation(fields: [teacher_id], references: [id])
 
+  @@index([sdid], name: "sdid")
+  @@index([teacher_id], name: "teacher_id")
   @@map("relief period")
 }
 
 model freeprogs {
   id          Int     @id @default(autoincrement())
-  title       String  
-  discription String 
+  title       String
+  discription String
   time        String?
   imgurl      String?
   rating      Float?
@@ -229,6 +220,7 @@ model freeprogs_suggetions {
   freeprogs_id Int
   student      user   @relation(fields: [user_id], references: [id])
 
+  @@index([user_id], name: "user_id")
   @@map("freeprogs suggetions")
 }
 
@@ -237,20 +229,23 @@ model quiz {
   discription    String         @db.VarChar(30)
   attemps        Int
   time_limit     Int
-  datetime       DateTime       @db.DateTime
+  datetime       DateTime       @db.DateTime(0)
   sdid           Int
   subject_detail subject_detail @relation(fields: [sdid], references: [id])
   qna            QnA[]
+
+  @@index([sdid], name: "sdid")
 }
 
 model QnA {
   id            Int      @id @default(autoincrement())
   question      String   @db.VarChar(50)
-  answers       answer[]
   correctanswer Int
   qid           Int
   quiz          quiz     @relation(fields: [qid], references: [id])
+  answers       answer[]
 
+  @@index([qid], name: "qid")
   @@map("qna")
 }
 
@@ -259,6 +254,8 @@ model answer {
   answers String @db.VarChar(50)
   qnaid   Int
   qna     QnA    @relation(fields: [qnaid], references: [id])
+
+  @@index([qnaid], name: "qnaid")
 }
 
 model studentanswer {
@@ -310,6 +307,8 @@ enum period_time_section {
   OL
   AL
   PRIMARY
+
+   @@map("period time_period_time_section")
 }
 
 enum user_role {
@@ -324,4 +323,71 @@ enum acc_status {
   INITIAL
   ACTIVE
   REVOKED
+}
+
+enum student_datail_status {
+  NO_ENROll
+  PENDING
+  ACTIVE
+}
+
+enum schoolsectiondetail_grade {
+  G1
+  G2
+  G3
+  G4
+  G5
+  G6
+  G7
+  G8
+  G9
+  G10
+  G11
+  G12MATH
+  G12BIO
+  G12ART
+  G12COM
+  G12TECH
+  G13MATH
+  G13BIO
+  G13ART
+  G13COM
+  G13TECH
+}
+
+enum subject_grade {
+  G1
+  G2
+  G3
+  G4
+  G5
+  G6
+  G7
+  G8
+  G9
+  G10
+  G11
+  G12MATH
+  G12BIO
+  G12ART
+  G12COM
+  G12TECH
+  G13MATH
+  G13BIO
+  G13ART
+  G13COM
+  G13TECH
+}
+
+enum subject_subjectgroup {
+  COMP
+  OPTIONAL_69
+  OL_BUCKET_1
+  OL_BUCKET_2
+  OL_BUCKET_3
+  MATH_CHEM_IT
+  BIO_PHY_AGRI
+  ART_BLA
+  COM_IT
+  TECH_IT
 }
