@@ -40,99 +40,20 @@ async function addall(values, schoolid) {
   return { succes: "200" };
 }
 
-async function getsStudentEnrollStatus(userid) {
-  const st = await prisma.studentdetail.findFirst({
+async function setClassteacher({ classid, teacherid }) {
+  const ct = await prisma.classroom.update({
     where: {
-      user_id: parseInt(userid),
+      id: classid,
     },
-    select: {
-      status: true,
-      classid: true,
-    },
-  });
-
-  if (!st) return { status: student_datail_status.NO_ENROll };
-  return st;
-}
-
-async function unenrollStudent(classid, userid) {
-  const std = await prisma.studentdetail.findFirst({
-    where: {
-      classid: classid,
-      user_id: userid,
-      status: student_datail_status.PENDING,
-    },
-  });
-  if (!std) throw { status: 404, message: "Failed to unenroll" };
-
-  const ops = await prisma.optionalsubs.deleteMany({
-    where: {
-      studentdetail_id: std.id,
-    },
-  });
-  console.log(ops);
-  const deletedstd = await prisma.studentdetail.delete({
-    where: {
-      id: std.id,
-    },
-  });
-  return deletedstd;
-}
-
-async function enrollStudent(userid, data) {
-  const std = await prisma.studentdetail.create({
     data: {
-      user_id: userid,
-      classid: data.classid,
-      // regid:data.regid,
-      status: student_datail_status.PENDING,
+      classteacher_id: teacherid,
     },
   });
 
-  if (data.section === "69") {
-    const ops = await prisma.optionalsubs.create({
-      data: {
-        sd_id: data.OPTIONAL_69,
-        studentdetail_id: std.id,
-        subjectgroup: subjectgroup.OPTIONAL_69,
-      },
-    });
-  } else if (data.section === "OL") {
-    const ops = await prisma.optionalsubs.createMany({
-      data: [
-        {
-          sd_id: data.OL_BUCKET_1,
-          studentdetail_id: std.id,
-          subjectgroup: subjectgroup.OL_BUCKET_1,
-        },
-        {
-          sd_id: data.OL_BUCKET_2,
-          studentdetail_id: std.id,
-          subjectgroup: subjectgroup.OL_BUCKET_2,
-        },
-        {
-          sd_id: data.OL_BUCKET_3,
-          studentdetail_id: std.id,
-          subjectgroup: subjectgroup.OL_BUCKET_3,
-        },
-      ],
-    });
-  } else if (data.section === "AL") {
-    if (data.OPTIONAL_AL) {
-      const [sdid, subgroup] = data.OPTIONAL_AL.split(".");
-      const ops = await prisma.optionalsubs.create({
-        data: {
-          sd_id: parseInt(sdid),
-          studentdetail_id: std.id,
-          subjectgroup: subgroup,
-        },
-      });
-    }
-  }
-
-  // if (!st) return { status: student_datail_status.NO_ENROll };
-  return std;
+  if (!ct) throw { status: 500, message: "Failed to set class teacher" };
+  return ct;
 }
+
 async function getSubDetailsForteacherRouter(userid) {
   const subs = await prisma.subject_detail.findMany({
     where: {
@@ -289,6 +210,7 @@ async function getdetails(schoolid, grade, name) {
       },
       select: {
         id: true,
+        classteacher_id: true,
 
         subject_detail: {
           select: {
@@ -346,10 +268,8 @@ async function patchSubjectDetail(sdid, data) {
 const classservice = {
   getClass,
   addall,
+  setClassteacher,
   getno_of_classes,
-  getsStudentEnrollStatus,
-  enrollStudent,
-  unenrollStudent,
   getSubDetailsForteacherRouter,
   getSubDetailsForStudentRouter,
   getSDsinClass,
