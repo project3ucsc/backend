@@ -150,6 +150,33 @@ Router.patch("/subjectdetail/:sdid", async (req, res) => {
 
 // -----------------------------------------------------------  enroll ----------------------------------------
 
+Router.get("/EnrolledStudents/:teacherid/:schoolid", async (req, res) => {
+  try {
+    const data = await enrollservice.getPendingEnrollRequests(
+      parseInt(req.params.teacherid),
+      parseInt(req.params.schoolid)
+    );
+    res.json(data);
+  } catch (err) {
+    res
+      .status(err.status || 500)
+      .json({ status: err.status, message: err.message });
+  }
+});
+
+Router.get("/getStudentDetail/:stdid", async (req, res) => {
+  try {
+    const data = await enrollservice.getStudentDetail(
+      parseInt(req.params.stdid)
+    );
+    res.json(data);
+  } catch (err) {
+    res
+      .status(err.status || 500)
+      .json({ status: err.status, message: err.message });
+  }
+});
+
 // return enroal status of a student
 Router.get("/enrollStatus/:userid", async (req, res) => {
   try {
@@ -162,12 +189,9 @@ Router.get("/enrollStatus/:userid", async (req, res) => {
   }
 });
 
-Router.get("/EnrolledStudents/:teacherid/:schoolid", async (req, res) => {
+Router.patch("/setStdStatus", async (req, res) => {
   try {
-    const data = await enrollservice.getPendingEnrollRequests(
-      parseInt(req.params.teacherid),
-      parseInt(req.params.schoolid)
-    );
+    const data = await enrollservice.setStdStatus(req.body);
     res.json(data);
   } catch (err) {
     res

@@ -22,6 +22,56 @@ async function getsStudentEnrollStatus(userid) {
 }
 
 // for teacher
+async function getStudentDetail(stdid) {
+  const student = await prisma.studentdetail.findFirst({
+    where: {
+      id: stdid,
+    },
+    select: {
+      id: true,
+      regid: true,
+      optionalsubs: {
+        select: {
+          subjectgroup: true,
+          subject_detail: {
+            select: {
+              subject: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      },
+      user: {
+        select: {
+          phone: true,
+          email: true,
+          gender: true,
+          username: true,
+        },
+      },
+    },
+  });
+  if (!student) throw { status: 404, message: "No student found" };
+
+  return student;
+}
+
+async function setStdStatus({ stdid, status }) {
+  const update = await prisma.studentdetail.update({
+    where: {
+      id: stdid,
+    },
+    data: {
+      status: status,
+    },
+  });
+  if (!update) throw { status: 404, message: "Process failed" };
+  return update;
+}
+
 async function getPendingEnrollRequests(teacherid, schoolid) {
   const classroom = await prisma.classroom.findFirst({
     where: {
@@ -36,6 +86,7 @@ async function getPendingEnrollRequests(teacherid, schoolid) {
       classid: classroom.id,
     },
     select: {
+      id: true,
       regid: true,
       status: true,
       user: {
@@ -134,6 +185,8 @@ async function enrollStudent(userid, data) {
 const enrollservice = {
   getsStudentEnrollStatus,
   getPendingEnrollRequests,
+  getStudentDetail,
+  setStdStatus,
   enrollStudent,
   unenrollStudent,
 };
