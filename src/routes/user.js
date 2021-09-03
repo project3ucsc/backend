@@ -23,6 +23,15 @@ Router.get("/:userId", async (req, res) => {
       where: {
         id: parseInt(req.params.userId),
       },
+      select: {
+        email: true,
+        gender: true,
+        id: true,
+        phone: true,
+        role: true,
+        school: true,
+        username: true,
+      },
     });
     res.json(user);
   } catch (err) {
