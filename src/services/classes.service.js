@@ -87,8 +87,11 @@ async function getSubDetailsForStudentRouter(userid) {
       user_id: parseInt(userid),
       status: student_datail_status.ACTIVE,
     },
+    include: {
+      optionalsubs: true,
+    },
   });
-
+  console.log(studetail);
   if (!studetail) throw { status: 404, message: "notenrolled" };
 
   const subs = await prisma.subject_detail.findMany({
@@ -99,15 +102,22 @@ async function getSubDetailsForStudentRouter(userid) {
       id: true,
       subject: {
         select: {
+          subjectgroup: true,
           name: true,
         },
       },
     },
   });
-
+  console.log(subs);
   if (!subs) throw { status: 404, message: "no data" };
 
-  return subs;
+  let filteredsubs = subs.filter((sub) => sub.subject.subjectgroup === "COMP");
+  let optsubs = subs.filter((sub) => sub.subject.subjectgroup !== "COMP");
+  studetail.optionalsubs.forEach((optionalsub) => {
+    filteredsubs.push(optsubs.find((sub) => sub.id === optionalsub.sd_id));
+  });
+
+  return filteredsubs;
 }
 
 async function getClass(classid) {
