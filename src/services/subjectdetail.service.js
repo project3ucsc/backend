@@ -157,6 +157,30 @@ async function updateResouceName({ id, name }) {
   return up;
 }
 
+async function getMeetingDetailsforStudent(sdid, day) {
+  const ts = await prisma.time_slot.findFirst({
+    where: {
+      sdid: sdid,
+      weekday: day,
+    },
+    select: {
+      id: true,
+      weekday: true,
+      meetingurl: true,
+      lastupdated: true,
+      isTimeChanged: true,
+      period_time: {
+        select: {
+          starttime: true,
+          endtime: true,
+        },
+      },
+    },
+  });
+  if (!ts) throw { status: 500, message: "No time slot" };
+  return ts;
+}
+
 async function getMeetingDetails(sdid, day) {
   if (day !== 6) {
     const ts = await prisma.time_slot.findFirst({
@@ -230,6 +254,7 @@ const subjectdetailservice = {
   deleteResouce,
   updateResouceName,
   getMeetingDetails,
+  getMeetingDetailsforStudent,
   editMeetingUrl,
 };
 

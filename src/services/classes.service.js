@@ -91,7 +91,7 @@ async function getSubDetailsForStudentRouter(userid) {
       optionalsubs: true,
     },
   });
-  console.log(studetail);
+  // console.log(studetail);
   if (!studetail) throw { status: 404, message: "notenrolled" };
 
   const subs = await prisma.subject_detail.findMany({
@@ -108,7 +108,7 @@ async function getSubDetailsForStudentRouter(userid) {
       },
     },
   });
-  console.log(subs);
+  // console.log(subs);
   if (!subs) throw { status: 404, message: "no data" };
 
   let filteredsubs = subs.filter((sub) => sub.subject.subjectgroup === "COMP");
