@@ -87,8 +87,15 @@ async function getSubDetailsForStudentRouter(userid) {
       user_id: parseInt(userid),
       status: student_datail_status.ACTIVE,
     },
-    include: {
+    select: {
+      classid: true,
       optionalsubs: true,
+      classroom: {
+        select: {
+          grade: true,
+          name: true,
+        },
+      },
     },
   });
   // console.log(studetail);
@@ -117,7 +124,7 @@ async function getSubDetailsForStudentRouter(userid) {
     filteredsubs.push(optsubs.find((sub) => sub.id === optionalsub.sd_id));
   });
 
-  return filteredsubs;
+  return { subs: filteredsubs, classroom: studetail.classroom };
 }
 
 async function getClass(classid) {

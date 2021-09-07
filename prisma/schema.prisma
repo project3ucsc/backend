@@ -24,6 +24,7 @@ model user {
   studentdetail          studentdetail[]
   teacher_subject_detail subject_detail[]
   teacher_time_slot      time_slot[]
+  submission             submission[]
 
   @@index([school_id], name: "school_id")
 }
@@ -113,6 +114,7 @@ model subject_detail {
   relief_periods   relief_period[]
   resource_section resource_section[]
   time_slot        time_slot[]
+  assmnt           assmnt[]
 
   @@id([classid, subjectid])
   @@index([subjectid], name: "subjectid")
@@ -141,6 +143,33 @@ model resource_detail {
 
   @@index([section_id], name: "section_id")
   @@map("resource detail")
+}
+
+model assmnt {
+  id          Int      @unique @default(autoincrement())
+  title       String
+  discription String   @db.VarChar(500)
+  filename    String   @default("NA")
+  sdid        Int
+  duedate     DateTime
+
+  submission     submission[]
+  subject_detail subject_detail @relation(fields: [sdid], references: [id])
+
+}
+
+model submission {
+  id         Int      @unique @default(autoincrement())
+  filename   String   @default("NA")
+  submitdate DateTime
+  marks      Int      @default(-1)
+
+  stuid Int
+  assid Int
+
+  user   user   @relation(fields: [stuid], references: [id])
+  assmnt assmnt @relation(fields: [assid], references: [id])
+
 }
 
 model time_slot {
@@ -308,7 +337,7 @@ enum period_time_section {
   AL
   PRIMARY
 
-   @@map("period time_period_time_section")
+  @@map("period time_period_time_section")
 }
 
 enum user_role {
