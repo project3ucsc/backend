@@ -21,7 +21,7 @@ model user {
   classroom              classroom?
   freeprogs_suggetions   freeprogs_suggetions[]
   teacher_relief_period  relief_period[]
-  studentdetail          studentdetail[]
+  studentdetail          studentdetail?
   teacher_subject_detail subject_detail[]
   teacher_time_slot      time_slot[]
   submission             submission[]

@@ -1,5 +1,10 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+const enum_submissionStatus = {
+  noattempt: "na",
+  submitearly: "se",
+  submitlate: "ls",
+};
 
 async function getAssmnts(sdid) {
   const assmnts = await prisma.assmnt.findMany({
@@ -15,6 +20,31 @@ async function getAssmntByID(assid) {
 
   if (!assmnts) throw { status: 404, message: "No assessment found" };
   return assmnts;
+}
+
+async function getAssmntByIdWithSubmisstion(assid, stuid) {
+  const assmnt = await prisma.assmnt.findFirst({
+    where: { id: parseInt(assid) },
+  });
+  if (!assmnt) throw { status: 404, message: "No assessment found" };
+
+  let submission = await prisma.submission.findFirst({
+    where: { assid: parseInt(assid), stuid: parseInt(stuid) },
+  });
+  let status = enum_submissionStatus.noattempt;
+  if (!submission) submission = { id: -1, filename: "NA" };
+  else {
+    status =
+      submission.submitdate < assmnt.duedate
+        ? enum_submissionStatus.submitearly
+        : enum_submissionStatus.submitlate;
+    if (submission.filename === "NA") {
+      status = enum_submissionStatus.noattempt;
+    }
+  }
+  submission = { ...submission, status: status };
+
+  return { assmnt, submission };
 }
 
 async function addAssmnt(data) {
@@ -74,6 +104,57 @@ async function updateAssmnt({ assid, property, value }) {
 //   return student;
 // }
 
-const assmntservice = { addAssmnt, getAssmntByID, getAssmnts, updateAssmnt };
+async function getSubmissions(assid) {
+  const assmnt = await prisma.assmnt.findFirst({
+    where: { id: parseInt(assid) },
+  });
+  if (!assmnt) throw { status: 500, message: "invalid assesment id" };
+
+  const subs = await prisma.submission.findMany({
+    where: { assid: parseInt(assid) },
+    select: {
+      id: true,
+      submitdate: true,
+      filename: true,
+      user: {
+        select: { username: true, studentdetail: { select: { regid: true } } },
+      },
+    },
+  });
+
+  if (!subs) throw { status: 404, message: "No Submissions yet" };
+  return { duedate: assmnt.duedate, submissions: subs };
+}
+
+async function upsertSubmission({ subid, assid, stuid, filename }) {
+  const sub = await prisma.submission.upsert({
+    where: {
+      id: subid,
+    },
+    update: {
+      filename: filename,
+      submitdate: new Date(),
+    },
+    create: {
+      filename: filename,
+      assid: assid,
+      stuid: stuid,
+      submitdate: new Date(),
+    },
+  });
+  if (!sub) throw { status: 500, message: "Something went wrong" };
+
+  return sub;
+}
+
+const assmntservice = {
+  addAssmnt,
+  getAssmntByID,
+  getAssmntByIdWithSubmisstion,
+  getAssmnts,
+  updateAssmnt,
+  getSubmissions,
+  upsertSubmission,
+};
 
 module.exports = assmntservice;
