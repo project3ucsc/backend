@@ -318,6 +318,7 @@ enum user_role {
   PRINCIPAl
   SCHOOLADMIN
   ADMIN
+  TUTOR
 }
 
 enum acc_status {
