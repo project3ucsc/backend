@@ -25,6 +25,30 @@ Route.post("/register", async (req, res) => {
       .json({ status: err.status, message: err.message });
   }
 });
+Route.get("/acc/:role/:sclid", async (req, res) => {
+  try {
+    const user = await authservice.getPendingNAciveAccounts(
+      req.params.role,
+      parseInt(req.params.sclid)
+    );
+    res.json(user);
+  } catch (err) {
+    res
+      .status(err.status || 500)
+      .json({ status: err.status, message: err.message });
+  }
+});
+
+Route.patch("/activate", async (req, res) => {
+  try {
+    const user = await authservice.setAccountStatus(req.body);
+    res.json(user);
+  } catch (err) {
+    res
+      .status(err.status || 500)
+      .json({ status: err.status, message: err.message });
+  }
+});
 
 Route.get("/register/school", async (req, res) => {
   try {

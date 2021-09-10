@@ -11,6 +11,7 @@ async function authenticate({ email, password }) {
     where: {
       email: email,
       password: hashpass,
+      acc_status: acc_status.ACTIVE,
     },
   });
 
@@ -26,9 +27,7 @@ async function authenticate({ email, password }) {
 async function register(values) {
   // check whether email is taken
   const userwiththatemail = await prisma.user.findFirst({
-    where: {
-      email: values.email,
-    },
+    where: { email: values.email },
   });
   if (userwiththatemail) throw { status: 500, message: "Email already exists" };
 
@@ -54,6 +53,7 @@ async function register(values) {
         email: values.email,
         phone: values.phone,
         gender: values.gender,
+        adr: values.address,
         password: hashpass,
         acc_status: status,
         role: values.usertype,
@@ -82,7 +82,7 @@ async function register(values) {
   }
 }
 
-async function getschools() {
+async function getAllSchools() {
   const schools = await prisma.school.findMany({
     select: {
       id: true,
@@ -94,10 +94,35 @@ async function getschools() {
   return schools;
 }
 
+async function setAccountStatus({ userid, status }) {
+  const st = await prisma.user.update({
+    where: { id: userid },
+    data: { acc_status: status },
+  });
+  if (!st) throw { status: 500, message: "Something went wrong" };
+
+  return st;
+}
+async function getPendingNAciveAccounts(role, school_id) {
+  const pending = await prisma.user.findMany({
+    where: { school_id: school_id, role: role, acc_status: acc_status.INITIAL },
+    select: { id: true, username: true, email: true },
+  });
+  const active = await prisma.user.findMany({
+    where: { school_id: school_id, role: role, acc_status: acc_status.ACTIVE },
+    select: { id: true, username: true, email: true },
+  });
+  // if (!teachers) throw { status: 404, message: "" };
+
+  return { pending, active };
+}
+
 const auth = {
-  authenticate: authenticate,
-  register: register,
-  getAllSchools: getschools,
+  authenticate,
+  register,
+  getAllSchools,
+  setAccountStatus,
+  getPendingNAciveAccounts,
 };
 
 module.exports = auth;
