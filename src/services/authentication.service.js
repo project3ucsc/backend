@@ -11,11 +11,12 @@ async function authenticate({ email, password }) {
     where: {
       email: email,
       password: hashpass,
-      acc_status: acc_status.ACTIVE,
     },
   });
 
   if (!user) throw { status: 500, message: "Username password incorrect" };
+  if (user.acc_status !== "ACTIVE")
+    throw { status: 500, message: "Your account is not activated yet" };
 
   const token = jwt.sign({ sub: user.email }, "lakshan", {
     expiresIn: "7d",
@@ -104,6 +105,37 @@ async function setAccountStatus({ userid, status }) {
   return st;
 }
 async function getPendingNAciveAccounts(role, school_id) {
+  if (role === user_role.PRINCIPAl) {
+    const pending = await prisma.user.findMany({
+      where: {
+        school_id: school_id,
+        role: role,
+        acc_status: acc_status.INITIAL,
+      },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        school: { select: { name: true } },
+      },
+    });
+    const active = await prisma.user.findMany({
+      where: {
+        school_id: school_id,
+        role: role,
+        acc_status: acc_status.ACTIVE,
+      },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        school: { select: { name: true } },
+      },
+    });
+    // if (!teachers) throw { status: 404, message: "" };
+
+    return { pending, active };
+  }
   const pending = await prisma.user.findMany({
     where: { school_id: school_id, role: role, acc_status: acc_status.INITIAL },
     select: { id: true, username: true, email: true },

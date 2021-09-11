@@ -40,6 +40,32 @@ Router.get("/:userId", async (req, res) => {
       .json({ status: err.status, message: err.message });
   }
 });
+
+// return user of given id
+Router.get("principal/:userId", async (req, res) => {
+  try {
+    const user = await prisma.user.findFirst({
+      where: {
+        id: parseInt(req.params.userId),
+      },
+      select: {
+        email: true,
+        gender: true,
+        id: true,
+        phone: true,
+        role: true,
+        school: true,
+        username: true,
+      },
+    });
+    res.json(user);
+  } catch (err) {
+    res
+      .status(err.status || 500)
+      .json({ status: err.status, message: err.message });
+  }
+});
+
 // return user of given id
 Router.put("/:userId", async (req, res) => {
   try {
