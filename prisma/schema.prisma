@@ -26,6 +26,7 @@ model user {
   teacher_subject_detail subject_detail[]
   teacher_time_slot      time_slot[]
   submission             submission[]
+  notification           notification[]
 
   @@index([school_id], name: "school_id")
 }
@@ -232,6 +233,16 @@ model relief_period {
   @@map("relief period")
 }
 
+model notification {
+  id          Int     @id @default(autoincrement())
+  title       String
+  discription String
+  to          Int
+  onClickTo   String?
+  type        String? @db.Char(1)
+  user        user    @relation(fields: [to], references: [id])
+}
+
 model freeprogs {
   id          Int     @id @default(autoincrement())
   title       String
@@ -347,6 +358,7 @@ enum user_role {
   PRINCIPAl
   SCHOOLADMIN
   ADMIN
+  TUTOR
 }
 
 enum acc_status {

@@ -21,6 +21,7 @@ const subjectdetailRoute = require("./routes/subjectdetail");
 const periodRoute = require("./routes/period");
 const timeslotRoute = require("./routes/timeslot");
 const assmntRoute = require("./routes/assmnt");
+const notificationRoute = require("./routes/notification");
 
 const freeprogRoute = require("./routes/freeprog");
 
@@ -31,6 +32,7 @@ app.use("/subjectdetail", subjectdetailRoute);
 app.use("/period", periodRoute);
 app.use("/timeslot", timeslotRoute);
 app.use("/assmnt", assmntRoute);
+app.use("/notification", notificationRoute);
 
 app.use("/freeprog", freeprogRoute);
 // app.use('/user', userRoute)
