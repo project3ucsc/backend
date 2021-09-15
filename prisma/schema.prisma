@@ -189,6 +189,7 @@ model time_slot {
   subject_detail        subject_detail          @relation(fields: [sdid], references: [id])
   teacher               user                    @relation(fields: [teacher_id], references: [id])
   reshceduled_timeslots reshceduled_timeslots[]
+  relief_period         relief_period[]
 
   @@index([class_id], name: "class_id")
   @@index([peroid_id], name: "peroid_id")
@@ -224,13 +225,28 @@ model reshceduled_timeslots {
 model relief_period {
   id             Int            @id @default(autoincrement())
   sdid           Int
+  tsid           Int
   teacher_id     Int
+  leave_id       Int
+  status         String         @default("a") @db.Char(1)
   subject_detail subject_detail @relation(fields: [sdid], references: [id])
+  time_slot      time_slot      @relation(fields: [tsid], references: [id])
   teacher        user           @relation(fields: [teacher_id], references: [id])
+  leave          leave          @relation(fields: [leave_id], references: [id])
 
   @@index([sdid], name: "sdid")
   @@index([teacher_id], name: "teacher_id")
   @@map("relief period")
+}
+
+model leave {
+  id       Int       @id @default(autoincrement())
+  reason   String
+  from_day DateTime
+  to_day   DateTime?
+  type     String    @db.Char(1)
+
+  relief_period relief_period[]
 }
 
 model notification {

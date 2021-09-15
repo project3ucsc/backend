@@ -3,11 +3,12 @@ const subjectdetailservice = require("../services/subjectdetail.service");
 const Router = express.Router();
 
 // return subject detail al information for teacher
-Router.get("/teacher/:sdid/:teacherid", async (req, res) => {
+Router.get("/teacher/:sdid/:teacherid/:isRel", async (req, res) => {
   try {
     const data = await subjectdetailservice.getSubDetailAllData(
       req.params.sdid,
-      parseInt(req.params.teacherid)
+      parseInt(req.params.teacherid),
+      req.params.isRel
     );
     res.json(data);
   } catch (err) {

@@ -1,7 +1,7 @@
 const { PrismaClient, acc_status, user_role } = require("@prisma/client");
 const prisma = new PrismaClient();
 
-async function getSubDetailAllData(sdid, userid) {
+async function getSubDetailAllData(sdid, userid, isRel) {
   const subject_detail = await prisma.subject_detail.findFirst({
     where: {
       id: parseInt(sdid),
@@ -40,7 +40,7 @@ async function getSubDetailAllData(sdid, userid) {
 
   if (!subject_detail) throw { status: 404, message: "no data" };
 
-  if (userid !== subject_detail.teacher_id)
+  if (userid !== subject_detail.teacher_id && isRel === "0")
     throw { status: 403, message: "Unauthorized to view this" };
 
   return subject_detail;
