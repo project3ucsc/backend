@@ -27,6 +27,10 @@ model user {
   teacher_time_slot      time_slot[]
   submission             submission[]
   notification           notification[]
+  pclass                 pclass[]
+  tutorschool_req        tutorschool_req[]
+  studenttution          studenttution[]
+  tutorpayment           tutorpayment[]
 
   @@index([school_id], name: "school_id")
 }
@@ -81,6 +85,7 @@ model school {
   periodtimes         period_time[]
   schoolsectiondetail schoolsectiondetail[]
   user                user[]
+  tutorschool_req     tutorschool_req[]
 }
 
 model schoolsectiondetail {
@@ -257,6 +262,64 @@ model notification {
   onClickTo   String?
   type        String? @db.Char(1)
   user        user    @relation(fields: [to], references: [id])
+}
+
+model pclass {
+  id          Int      @unique @default(autoincrement())
+  discription String
+  subject     String
+  grade       String
+  meetingurl  String
+  fee         String
+  day         Int
+  sttime      DateTime
+  endtime     DateTime
+
+  tutorid Int
+  tutor   user @relation(fields: [tutorid], references: [id])
+
+  studenttution studenttution[]
+  tutorpayment  tutorpayment[]
+}
+
+model tutorschool_req {
+  id            Int    @unique @default(autoincrement())
+  discription   String
+  qualification String
+  status        String @default("a") @db.Char(1)
+
+  schoolid Int
+  tutorid  Int
+  tutor    user   @relation(fields: [tutorid], references: [id])
+  school   school @relation(fields: [schoolid], references: [id])
+
+
+  @@index([schoolid], name: "schoolid")
+  @@map("tutorschool req")
+}
+
+model studenttution {
+  id     Int    @unique @default(autoincrement())
+  status String @default("a") @db.Char(1)
+
+  pclassid  Int
+  studentid Int
+  student   user   @relation(fields: [studentid], references: [id])
+  pclass    pclass @relation(fields: [pclassid], references: [id])
+
+
+}
+
+model tutorpayment {
+  id     Int    @unique @default(autoincrement())
+  status String @default("a") @db.Char(1)
+
+  pclassid  Int
+  studentid Int
+  student   user   @relation(fields: [studentid], references: [id])
+  pclass    pclass @relation(fields: [pclassid], references: [id])
+
+
 }
 
 model freeprogs {

@@ -23,6 +23,7 @@ const timeslotRoute = require("./routes/timeslot");
 const assmntRoute = require("./routes/assmnt");
 const notificationRoute = require("./routes/notification");
 const releifRoute = require("./routes/relief");
+const tutorRoute = require("./routes/tutor");
 
 const freeprogRoute = require("./routes/freeprog");
 
@@ -35,6 +36,7 @@ app.use("/timeslot", timeslotRoute);
 app.use("/assmnt", assmntRoute);
 app.use("/notification", notificationRoute);
 app.use("/relief", releifRoute);
+app.use("/tutor", tutorRoute);
 
 app.use("/freeprog", freeprogRoute);
 // app.use('/user', userRoute)
