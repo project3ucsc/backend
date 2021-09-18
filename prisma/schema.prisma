@@ -32,8 +32,8 @@ model user {
   studenttution          studenttution[]
   tutorpayment           tutorpayment[]
 
-  @@index([school_id], name: "school_id")
   psubmission psubmission[]
+  @@index([school_id], name: "school_id")
 }
 
 model studentdetail {
@@ -332,7 +332,7 @@ model presource_section {
   pclass            pclass             @relation(fields: [sdid], references: [id])
   presource_details presource_detail[]
 
-  @@index([sdid], name: "sdid")
+  @@index([sdid], name: "classid")
   @@map("presource section")
 }
 
@@ -344,7 +344,7 @@ model presource_detail {
   filename          String
   presource_section presource_section @relation(fields: [section_id], references: [id])
 
-  @@index([section_id], name: "section_id")
+  @@index([section_id], name: "psection_id")
   @@map("presource detail")
 }
 

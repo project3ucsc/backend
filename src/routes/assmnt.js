@@ -1,7 +1,6 @@
 const express = require("express");
 const assmntservice = require("../services/assmnt.service");
 const Router = express.Router();
-const periodservice = require("../services/period.service");
 
 Router.get("/all/:sdid", async (req, res) => {
   try {
