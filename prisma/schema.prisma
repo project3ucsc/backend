@@ -33,6 +33,7 @@ model user {
   tutorpayment           tutorpayment[]
 
   @@index([school_id], name: "school_id")
+  psubmission psubmission[]
 }
 
 model studentdetail {
@@ -271,15 +272,17 @@ model pclass {
   grade       String
   meetingurl  String
   fee         String
-  day         Int
+  day         String   @db.VarChar(10)
   sttime      DateTime
   endtime     DateTime
 
   tutorid Int
   tutor   user @relation(fields: [tutorid], references: [id])
 
-  studenttution studenttution[]
-  tutorpayment  tutorpayment[]
+  studenttution     studenttution[]
+  tutorpayment      tutorpayment[]
+  presource_section presource_section[]
+  passmnt           passmnt[]
 }
 
 model tutorschool_req {
@@ -319,6 +322,56 @@ model tutorpayment {
   student   user   @relation(fields: [studentid], references: [id])
   pclass    pclass @relation(fields: [pclassid], references: [id])
 
+
+}
+
+model presource_section {
+  id                Int                @unique @default(autoincrement())
+  name              String
+  sdid              Int
+  pclass            pclass             @relation(fields: [sdid], references: [id])
+  presource_details presource_detail[]
+
+  @@index([sdid], name: "sdid")
+  @@map("presource section")
+}
+
+model presource_detail {
+  id                Int               @unique @default(autoincrement())
+  name              String
+  section_id        Int
+  type              String            @db.VarChar(6)
+  filename          String
+  presource_section presource_section @relation(fields: [section_id], references: [id])
+
+  @@index([section_id], name: "section_id")
+  @@map("presource detail")
+}
+
+model passmnt {
+  id          Int      @unique @default(autoincrement())
+  title       String
+  discription String   @db.VarChar(500)
+  filename    String   @default("NA")
+  sdid        Int
+  duedate     DateTime
+
+  psubmission psubmission[]
+  pclass      pclass        @relation(fields: [sdid], references: [id])
+
+}
+
+model psubmission {
+  id         Int      @unique @default(autoincrement())
+  filename   String   @default("NA")
+  submitdate DateTime
+  marks      Int      @default(-1)
+
+  stuid Int
+  assid Int
+
+  user    user    @relation(fields: [stuid], references: [id])
+  passmnt passmnt @relation(fields: [assid], references: [id])
 
 }
 
