@@ -76,6 +76,19 @@ Router.get("/getSubDetailsforStudent/:userid", async (req, res) => {
       .json({ status: err.status, message: err.message });
   }
 });
+// return subject details for dash stu
+Router.get("/getSubDetailsforStudent/dash/:userid", async (req, res) => {
+  try {
+    const data = await classservice.getSubDetailsForStudentDash(
+      req.params.userid
+    );
+    res.json(data);
+  } catch (err) {
+    res
+      .status(err.status || 500)
+      .json({ status: err.status, message: err.message });
+  }
+});
 
 Router.get("/getdetails/:school/:grade/:classno", async (req, res) => {
   try {

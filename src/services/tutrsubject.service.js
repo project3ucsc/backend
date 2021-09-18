@@ -59,6 +59,7 @@ async function getSubDetailAllDataForStudent(sdid, userid) {
       sttime: true,
       endtime: true,
       subject: true,
+      day: true,
       presource_section: {
         select: {
           id: true,

@@ -302,7 +302,7 @@ Router.get("/studenttution/:stuid", async (req, res) => {
       return {
         id: r.pclass.id,
         tutor: r.pclass.tutor.username,
-        name: `${r.pclass.subject} | ${r.pclass.grade}`,
+        name: `${r.pclass.subject} | Grade ${r.pclass.grade}`,
       };
     });
     res.json(cls);
