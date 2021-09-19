@@ -1,14 +1,13 @@
 const express = require("express");
-const subjectdetailservice = require("../services/subjectdetail.service");
+const subjectdetailservice = require("../services/tutrsubject.service");
 const Router = express.Router();
 
 // return subject detail al information for teacher
-Router.get("/teacher/:sdid/:teacherid/:isRel", async (req, res) => {
+Router.get("/teacher/:sdid/:teacherid", async (req, res) => {
   try {
     const data = await subjectdetailservice.getSubDetailAllData(
       req.params.sdid,
-      parseInt(req.params.teacherid),
-      req.params.isRel
+      parseInt(req.params.teacherid)
     );
     res.json(data);
   } catch (err) {

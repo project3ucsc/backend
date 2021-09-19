@@ -26,7 +26,13 @@ model user {
   teacher_subject_detail subject_detail[]
   teacher_time_slot      time_slot[]
   submission             submission[]
+  notification           notification[]
+  pclass                 pclass[]
+  tutorschool_req        tutorschool_req[]
+  studenttution          studenttution[]
+  tutorpayment           tutorpayment[]
 
+  psubmission psubmission[]
   @@index([school_id], name: "school_id")
 }
 
@@ -80,6 +86,7 @@ model school {
   periodtimes         period_time[]
   schoolsectiondetail schoolsectiondetail[]
   user                user[]
+  tutorschool_req     tutorschool_req[]
 }
 
 model schoolsectiondetail {
@@ -188,6 +195,7 @@ model time_slot {
   subject_detail        subject_detail          @relation(fields: [sdid], references: [id])
   teacher               user                    @relation(fields: [teacher_id], references: [id])
   reshceduled_timeslots reshceduled_timeslots[]
+  relief_period         relief_period[]
 
   @@index([class_id], name: "class_id")
   @@index([peroid_id], name: "peroid_id")
@@ -223,13 +231,148 @@ model reshceduled_timeslots {
 model relief_period {
   id             Int            @id @default(autoincrement())
   sdid           Int
+  tsid           Int
   teacher_id     Int
+  leave_id       Int
+  status         String         @default("a") @db.Char(1)
   subject_detail subject_detail @relation(fields: [sdid], references: [id])
+  time_slot      time_slot      @relation(fields: [tsid], references: [id])
   teacher        user           @relation(fields: [teacher_id], references: [id])
+  leave          leave          @relation(fields: [leave_id], references: [id])
 
   @@index([sdid], name: "sdid")
   @@index([teacher_id], name: "teacher_id")
   @@map("relief period")
+}
+
+model leave {
+  id       Int       @id @default(autoincrement())
+  reason   String
+  from_day DateTime
+  to_day   DateTime?
+  type     String    @db.Char(1)
+
+  relief_period relief_period[]
+}
+
+model notification {
+  id          Int     @id @default(autoincrement())
+  title       String
+  discription String
+  to          Int
+  onClickTo   String?
+  type        String? @db.Char(1)
+  user        user    @relation(fields: [to], references: [id])
+}
+
+model pclass {
+  id          Int      @unique @default(autoincrement())
+  discription String
+  subject     String
+  grade       String
+  meetingurl  String
+  fee         String
+  day         String   @db.VarChar(10)
+  sttime      DateTime
+  endtime     DateTime
+
+  tutorid Int
+  tutor   user @relation(fields: [tutorid], references: [id])
+
+  studenttution     studenttution[]
+  tutorpayment      tutorpayment[]
+  presource_section presource_section[]
+  passmnt           passmnt[]
+}
+
+model tutorschool_req {
+  id            Int    @unique @default(autoincrement())
+  discription   String
+  qualification String
+  status        String @default("a") @db.Char(1)
+
+  schoolid Int
+  tutorid  Int
+  tutor    user   @relation(fields: [tutorid], references: [id])
+  school   school @relation(fields: [schoolid], references: [id])
+
+
+  @@index([schoolid], name: "schoolid")
+  @@map("tutorschool req")
+}
+
+model studenttution {
+  id     Int    @unique @default(autoincrement())
+  status String @default("a") @db.Char(1)
+
+  pclassid  Int
+  studentid Int
+  student   user   @relation(fields: [studentid], references: [id])
+  pclass    pclass @relation(fields: [pclassid], references: [id])
+
+
+}
+
+model tutorpayment {
+  id     Int    @unique @default(autoincrement())
+  status String @default("a") @db.Char(1)
+
+  pclassid  Int
+  studentid Int
+  student   user   @relation(fields: [studentid], references: [id])
+  pclass    pclass @relation(fields: [pclassid], references: [id])
+
+
+}
+
+model presource_section {
+  id                Int                @unique @default(autoincrement())
+  name              String
+  sdid              Int
+  pclass            pclass             @relation(fields: [sdid], references: [id])
+  presource_details presource_detail[]
+
+  @@index([sdid], name: "classid")
+  @@map("presource section")
+}
+
+model presource_detail {
+  id                Int               @unique @default(autoincrement())
+  name              String
+  section_id        Int
+  type              String            @db.VarChar(6)
+  filename          String
+  presource_section presource_section @relation(fields: [section_id], references: [id])
+
+  @@index([section_id], name: "psection_id")
+  @@map("presource detail")
+}
+
+model passmnt {
+  id          Int      @unique @default(autoincrement())
+  title       String
+  discription String   @db.VarChar(500)
+  filename    String   @default("NA")
+  sdid        Int
+  duedate     DateTime
+
+  psubmission psubmission[]
+  pclass      pclass        @relation(fields: [sdid], references: [id])
+
+}
+
+model psubmission {
+  id         Int      @unique @default(autoincrement())
+  filename   String   @default("NA")
+  submitdate DateTime
+  marks      Int      @default(-1)
+
+  stuid Int
+  assid Int
+
+  user    user    @relation(fields: [stuid], references: [id])
+  passmnt passmnt @relation(fields: [assid], references: [id])
+
 }
 
 model freeprogs {

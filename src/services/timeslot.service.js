@@ -228,9 +228,9 @@ async function isConflictsWithTeacher(data, schoolid) {
       overlaps.push(peroid.id);
     }
   });
-  console.log(overlaps);
+  console.log("overlaps", overlaps);
 
-  const conflicts = await prisma.time_slot.findMany({
+  const conflicts = await prisma.time_slot.findFirst({
     where: {
       teacher_id: data.teacher_id,
       weekday: data.weekday,
@@ -240,9 +240,9 @@ async function isConflictsWithTeacher(data, schoolid) {
     },
   });
 
-  console.log(conflicts);
+  console.log("conflicts", conflicts);
 
-  return conflicts.length !== 0;
+  return conflicts !== null;
 }
 
 async function deleteTimeslot(ts_id) {
@@ -260,6 +260,8 @@ const timeslotservice = {
   createTimeslot,
   updateTimeslot,
   deleteTimeslot,
+
+  isConflictsWithTeacher,
 };
 
 module.exports = timeslotservice;
