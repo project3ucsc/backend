@@ -13,6 +13,13 @@ async function getAssmnts(sdid) {
   return assmnts;
 }
 
+async function getAssmntTimeline(classid, userid) {
+  const assmnts = await prisma.assmnt.findMany({
+    where: { sdid: parseInt(sdid) },
+  });
+  return assmnts;
+}
+
 async function getAssmntByID(assid) {
   const assmnts = await prisma.assmnt.findFirst({
     where: { id: parseInt(assid) },
@@ -152,6 +159,7 @@ const assmntservice = {
   getAssmntByID,
   getAssmntByIdWithSubmisstion,
   getAssmnts,
+  getAssmntTimeline,
   updateAssmnt,
   getSubmissions,
   upsertSubmission,

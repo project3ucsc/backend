@@ -12,6 +12,19 @@ Router.get("/all/:sdid", async (req, res) => {
       .json({ status: err.status, message: err.message });
   }
 });
+Router.get("/timeline/:userid/:classid", async (req, res) => {
+  try {
+    const data = await assmntservice.getAssmntTimeline(
+      parseInt(req.params.classid),
+      parseInt(req.params.userid)
+    );
+    res.json(data);
+  } catch (err) {
+    res
+      .status(err.status || 500)
+      .json({ status: err.status, message: err.message });
+  }
+});
 
 Router.get("/:assid", async (req, res) => {
   try {

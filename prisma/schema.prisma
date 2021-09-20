@@ -32,7 +32,9 @@ model user {
   studenttution          studenttution[]
   tutorpayment           tutorpayment[]
 
-  psubmission psubmission[]
+  psubmission        psubmission[]
+  teacherattendance  teacherattendance[]
+  timeslotattendance timeslotattendance[]
   @@index([school_id], name: "school_id")
 }
 
@@ -124,6 +126,7 @@ model subject_detail {
   time_slot        time_slot[]
   assmnt           assmnt[]
 
+  timeslotattendance timeslotattendance[]
   @@id([classid, subjectid])
   @@index([subjectid], name: "subjectid")
   @@index([teacher_id], name: "teacher_id")
@@ -197,6 +200,7 @@ model time_slot {
   reshceduled_timeslots reshceduled_timeslots[]
   relief_period         relief_period[]
 
+  timeslotattendance timeslotattendance[]
   @@index([class_id], name: "class_id")
   @@index([peroid_id], name: "peroid_id")
   @@index([sdid], name: "sdid")
@@ -253,6 +257,37 @@ model leave {
   type     String    @db.Char(1)
 
   relief_period relief_period[]
+}
+
+model teacherattendance {
+  id        Int @id @default(autoincrement())
+  teacherid Int
+  month     Int
+  all_c     Int @default(0)
+  done_c    Int @default(0)
+  leave_c   Int @default(0)
+  relreq_c  Int @default(0)
+  reldone_c Int @default(0)
+
+
+  teacher user @relation(fields: [teacherid], references: [id])
+
+}
+
+model timeslotattendance {
+  id        Int @id @default(autoincrement())
+  tsid      Int
+  teacherid Int
+  sdid      Int
+
+  stucount  Int    @default(0)
+  randomnum Int
+  date      String @db.VarChar(20)
+  status    String @default("b") @db.Char(1)
+
+  teacher        user           @relation(fields: [teacherid], references: [id])
+  subject_detail subject_detail @relation(fields: [sdid], references: [id])
+  time_slot      time_slot      @relation(fields: [tsid], references: [id])
 }
 
 model notification {
