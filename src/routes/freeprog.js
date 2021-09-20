@@ -45,5 +45,33 @@ Router.post("/suggest/:userid", async (req, res) => {
   }
 });
 
+Router.post("/add/:userId", async (req, res) => {
+  try {
+    //  const userid = parseInt(req.params.userId);
+     const freeProgram = await prisma.freeprogs.create({
+      data: {
+          // user_id: userid,
+          title: req.body.title,
+          discription: req.body.discription,
+          subject: req.body.subject,
+          time : `${req.body.time}`,
+          type: req.body.type,
+          day : req.body.day,
+          grade: req.body.grade,
+          channel: req.body.channel,
+      },
+    });
+    
+     res.json(freeProgram);
+     //console.log(freeProg);
+    // res.json("Okay");
+  }
+  catch(err){
+    res
+      .status(err.status || 500)
+      .json({ status: err.status, message: err.message });
+  }
+});
+
 
 module.exports = Router;

@@ -239,7 +239,12 @@ model freeprogs {
   time        String?
   imgurl      String?
   rating      Float?
-  ratecount   Int
+  ratecount   Int?
+  subject     String?
+  type        String?
+  day         String?
+  grade       String?
+  channel     String?
 }
 
 model freeprogs_suggetions {
