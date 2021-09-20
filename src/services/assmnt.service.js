@@ -13,9 +13,16 @@ async function getAssmnts(sdid) {
   return assmnts;
 }
 
-async function getAssmntTimeline(classid, userid) {
+async function getAssmntTimeline(userid) {
+  const stu = await prisma.studentdetail.findFirst({
+    where: { user_id: userid },
+  });
+  if (!stu) return [];
+
   const assmnts = await prisma.assmnt.findMany({
-    where: { sdid: parseInt(sdid) },
+    where: { subject_detail: { classid: stu.classid } },
+    select: { duedate: true, id: true, title: true },
+    orderBy: { duedate: "asc" },
   });
   return assmnts;
 }

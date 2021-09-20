@@ -64,6 +64,7 @@ async function getTimeSlotsForStudent(schoolid, studentid) {
       },
       select: {
         weekday: true,
+        sdid: true,
         subject_detail: {
           select: {
             subject: {

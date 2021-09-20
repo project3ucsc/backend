@@ -12,10 +12,9 @@ Router.get("/all/:sdid", async (req, res) => {
       .json({ status: err.status, message: err.message });
   }
 });
-Router.get("/timeline/:userid/:classid", async (req, res) => {
+Router.get("/timeline/:userid", async (req, res) => {
   try {
     const data = await assmntservice.getAssmntTimeline(
-      parseInt(req.params.classid),
       parseInt(req.params.userid)
     );
     res.json(data);
