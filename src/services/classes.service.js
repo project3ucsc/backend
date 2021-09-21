@@ -35,9 +35,54 @@ async function addall(values, schoolid) {
         throw { status: 500, message: "Proccess failed when creating classes" };
     }
   }
+  const upschool = await prisma.school.update({
+    where: { id: parseInt(schoolid) },
+    data: { isconfig: true },
+  });
 
   console.log("-------------------");
-  return { succes: "200" };
+  return upschool;
+}
+async function addClass({ grade, count }, schoolid) {
+  console.log(schoolid);
+
+  console.log(grade, count);
+
+  const schoolsectiondetail = await prisma.schoolsectiondetail.findFirst({
+    where: { school_id: parseInt(schoolid), grade: grade },
+  });
+  if (!schoolsectiondetail) throw { status: 500, message: "Proccess failed" };
+
+  const schoolsectiondetailup = await prisma.schoolsectiondetail.update({
+    where: { id: schoolsectiondetail.id },
+    data: {
+      classcount: { increment: count },
+    },
+  });
+
+  if (!schoolsectiondetailup) throw { status: 500, message: "Proccess failed" };
+
+  console.log(schoolsectiondetail);
+
+  if (!schoolsectiondetail) throw { status: 500, message: "Proccess failed" };
+  for (
+    let index = schoolsectiondetail.classcount;
+    index < schoolsectiondetail.classcount + count;
+    index++
+  ) {
+    let i = index + 1;
+    const cls = await prisma.classroom.create({
+      data: {
+        school_id: parseInt(schoolid),
+        grade: grade,
+        name: i.toString(),
+      },
+    });
+    if (!cls)
+      throw { status: 500, message: "Proccess failed when creating classes" };
+  }
+
+  return "done";
 }
 
 async function setClassteacher({ classid, teacherid }) {
@@ -177,6 +222,17 @@ async function getClass(classid) {
   });
   if (!classroom) throw { status: 404, message: "Class Not Found" };
   return classroom;
+}
+
+async function isConfig(schoolid) {
+  const school = await prisma.school.findFirst({
+    where: {
+      id: parseInt(schoolid),
+    },
+    select: { isconfig: true },
+  });
+  if (!school) throw { status: 404, message: "Details Not Found" };
+  return school;
 }
 
 async function getno_of_classes(schoolid) {
@@ -327,8 +383,10 @@ async function patchSubjectDetail(sdid, data) {
 const classservice = {
   getClass,
   addall,
+  addClass,
   setClassteacher,
   getno_of_classes,
+  isConfig,
   getSubDetailsForteacherRouter,
   getSubDetailsForStudentRouter,
   getSDsinClass,

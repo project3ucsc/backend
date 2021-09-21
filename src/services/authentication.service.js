@@ -34,7 +34,7 @@ async function register(values) {
 
   // only student account will actived by defuult
   const status =
-    values.usertype === user_role.STUDENT
+    values.usertype === user_role.STUDENT || values.usertype === user_role.TUTOR
       ? acc_status.ACTIVE
       : acc_status.INITIAL;
 
@@ -46,6 +46,7 @@ async function register(values) {
       data: {
         name: values.schoolname,
         address: values.schooladr,
+        filename: values.filename,
       },
     });
     const user = await prisma.user.create({
@@ -108,7 +109,6 @@ async function getPendingNAciveAccounts(role, school_id) {
   if (role === user_role.PRINCIPAl) {
     const pending = await prisma.user.findMany({
       where: {
-        school_id: school_id,
         role: role,
         acc_status: acc_status.INITIAL,
       },
@@ -121,7 +121,6 @@ async function getPendingNAciveAccounts(role, school_id) {
     });
     const active = await prisma.user.findMany({
       where: {
-        school_id: school_id,
         role: role,
         acc_status: acc_status.ACTIVE,
       },
