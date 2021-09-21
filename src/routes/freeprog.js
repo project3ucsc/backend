@@ -16,6 +16,21 @@ Router.get("/", async (req, res) => {
   }
 });
 
+Router.get("/stusuggest", async(req, res) => {
+  try {
+    // const userid = parseInt(req.params.userId);
+    const stusuggestions = await prisma.freeprogs_suggetions.findMany({});
+    res.json(stusuggestions);
+    // if(!stusuggestions) throw { status: 500, message: "Proccess failed" };
+    // res.json("Okay");
+  }
+  catch(err) {
+    res
+      .status(err.status || 500)
+      .json({ status: err.status, message: err.message });
+  }
+});
+
 Router.post("/suggest/:userid", async (req, res) => {
   try {
      const userid = parseInt(req.params.userid);
@@ -59,6 +74,8 @@ Router.post("/add/:userId", async (req, res) => {
           day : req.body.day,
           grade: req.body.grade,
           channel: req.body.channel,
+          rating: req.body.rating,
+          link: req.body.link,
       },
     });
     

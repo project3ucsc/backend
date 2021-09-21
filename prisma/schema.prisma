@@ -238,6 +238,7 @@ model freeprogs {
   discription String
   time        String?
   imgurl      String?
+  link        String?
   rating      Float?
   ratecount   Int?
   subject     String?
