@@ -122,7 +122,6 @@ model subject_detail {
   subject          subject            @relation(fields: [subjectid], references: [id])
   teacher          user               @relation(fields: [teacher_id], references: [id])
   optionalsubs     optionalsubs[]
-  quiz             quiz[]
   relief_periods   relief_period[]
   resource_section resource_section[]
   time_slot        time_slot[]
@@ -153,9 +152,22 @@ model resource_detail {
   type             String           @db.VarChar(6)
   filename         String
   resource_section resource_section @relation(fields: [section_id], references: [id])
+  publicresource   publicresource[]
 
   @@index([section_id], name: "section_id")
   @@map("resource detail")
+}
+
+model publicresource {
+  id              Int             @unique @default(autoincrement())
+  subject         String
+  grade           grade
+  sectiondisp     String?
+  resid           Int
+  resource_detail resource_detail @relation(fields: [resid], references: [id])
+
+
+
 }
 
 model assmnt {
@@ -432,48 +444,6 @@ model freeprogs_suggetions {
 
   @@index([user_id], name: "user_id")
   @@map("freeprogs suggetions")
-}
-
-model quiz {
-  id             Int            @id @default(autoincrement())
-  discription    String         @db.VarChar(30)
-  attemps        Int
-  time_limit     Int
-  datetime       DateTime       @db.DateTime(0)
-  sdid           Int
-  subject_detail subject_detail @relation(fields: [sdid], references: [id])
-  qna            QnA[]
-
-  @@index([sdid], name: "sdid")
-}
-
-model QnA {
-  id            Int      @id @default(autoincrement())
-  question      String   @db.VarChar(50)
-  correctanswer Int
-  qid           Int
-  quiz          quiz     @relation(fields: [qid], references: [id])
-  answers       answer[]
-
-  @@index([qid], name: "qid")
-  @@map("qna")
-}
-
-model answer {
-  id      Int    @id @default(autoincrement())
-  answers String @db.VarChar(50)
-  qnaid   Int
-  qna     QnA    @relation(fields: [qnaid], references: [id])
-
-  @@index([qnaid], name: "qnaid")
-}
-
-model studentanswer {
-  id          Int @id @default(autoincrement())
-  answer      Int
-  question_id Int
-  quiz_id     Int
-  student_id  Int
 }
 
 enum grade {
