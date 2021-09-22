@@ -7,8 +7,16 @@ const prisma = new PrismaClient();
 // return all user documents
 Router.get("/", async (req, res) => {
   try {
-    const users = await User.find();
-    res.json(users);
+    const user = await prisma.user.findMany({
+      where: {
+        role: "TEACHER",
+      },
+      select: {
+        id: true,
+        username: true,
+      },
+    });
+    res.json(user);
   } catch (err) {
     res
       .status(err.status || 500)

@@ -383,7 +383,15 @@ Router.get("/studenttution/class/:clsid", async (req, res) => {
       select: {
         id: true,
         student: {
-          select: { id: true, email: true, username: true, phone: true },
+          select: {
+            id: true,
+            email: true,
+            username: true,
+            phone: true,
+            adr: true,
+            gender: true,
+            school: { select: { name: true } },
+          },
         },
       },
     });
@@ -395,7 +403,15 @@ Router.get("/studenttution/class/:clsid", async (req, res) => {
       select: {
         id: true,
         student: {
-          select: { id: true, email: true, username: true, phone: true },
+          select: {
+            id: true,
+            email: true,
+            username: true,
+            phone: true,
+            adr: true,
+            gender: true,
+            school: { select: { name: true } },
+          },
         },
       },
     });

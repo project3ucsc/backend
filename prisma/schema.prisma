@@ -36,6 +36,7 @@ model user {
   teacherattendance  teacherattendance[]
   timeslotattendance timeslotattendance[]
   @@index([school_id], name: "school_id")
+  leave leave[]
 }
 
 model studentdetail {
@@ -264,12 +265,14 @@ model relief_period {
 }
 
 model leave {
-  id       Int       @id @default(autoincrement())
-  reason   String
-  from_day DateTime
-  to_day   DateTime?
-  type     String    @db.Char(1)
+  id        Int       @id @default(autoincrement())
+  reason    String
+  from_day  DateTime
+  to_day    DateTime?
+  type      String    @db.Char(1)
+  teacherid Int
 
+  teacher       user            @relation(fields: [teacherid], references: [id])
   relief_period relief_period[]
 }
 

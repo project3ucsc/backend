@@ -155,4 +155,101 @@ Router.patch("/stuclick", async (req, res) => {
   }
 });
 
+var monthmap = new Map();
+monthmap.set(1, "Jan");
+monthmap.set(2, "Feb");
+monthmap.set(3, "Mar");
+monthmap.set(4, "Apr");
+monthmap.set(5, "May");
+monthmap.set(6, "Jun");
+monthmap.set(7, "Jul");
+monthmap.set(8, "Aug");
+monthmap.set(9, "Sep");
+monthmap.set(10, "May");
+monthmap.set(11, "May");
+monthmap.set(12, "May");
+
+Router.get("/teacheroveroll", async (req, res) => {
+  try {
+    const groupcount = await prisma.teacherattendance.groupBy({
+      by: ["month"],
+      _sum: {
+        all_c: true,
+        done_c: true,
+      },
+    });
+    const data = groupcount.map((g) => (g._sum.done_c / g._sum.all_c) * 100);
+    const month = groupcount.map((g) => monthmap.get(g.month));
+    console.log(groupcount, data);
+    res.json({ data, month });
+  } catch (err) {
+    res
+      .status(err.status || 500)
+      .json({ status: err.status, message: err.message });
+  }
+});
+
+Router.get("/leaveteachers/:schid", async (req, res) => {
+  try {
+    let today = new Date();
+    const leaveteac = await prisma.leave.findMany({
+      select: {
+        from_day: true,
+        // to_day: true,
+        teacher: { select: { username: true } },
+      },
+    });
+
+    res.json(leaveteac.filter((l) => l.from_day <= today));
+  } catch (err) {
+    res
+      .status(err.status || 500)
+      .json({ status: err.status, message: err.message });
+  }
+});
+
+Router.get("/setTeacherData/:uid", async (req, res) => {
+  try {
+    const groupcount = await prisma.teacherattendance.groupBy({
+      where: { teacherid: parseInt(req.params.uid) },
+      by: ["month"],
+      _avg: {
+        all_c: true,
+        done_c: true,
+      },
+    });
+    // console.log(groupcount);
+
+    // console.log(groupcount, data);
+    const leave = await prisma.leave.count({
+      where: { teacherid: parseInt(req.params.uid) },
+    });
+    console.log(groupcount);
+    const data = groupcount.map((g) => (g._avg.done_c / g._avg.all_c) * 100);
+    const month = groupcount.map((g) => monthmap.get(g.month));
+    if (groupcount.length === 0) {
+      res.json({
+        data,
+        month,
+        p: "-",
+        nop: `- / -`,
+        leave,
+      });
+    } else
+      res.json({
+        data,
+        month,
+        p: data[data.length - 1],
+        nop: `${groupcount[groupcount.length - 1]._avg.done_c}/${
+          groupcount[groupcount.length - 1]._avg.all_c
+        }`,
+        leave,
+      });
+  } catch (err) {
+    res
+      .status(err.status || 500)
+      .json({ status: err.status, message: err.message });
+  }
+});
+
 module.exports = Router;

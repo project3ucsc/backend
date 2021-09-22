@@ -10,18 +10,24 @@ const enum_releifStatus = {
   expried: "d",
 };
 
-async function addLeave({ date, reason }) {
+async function addLeave({ daterange, reason, userid }) {
   const newleave = await prisma.leave.create({
-    data: { from_day: date[0], to_day: date[1], reason: reason, type: "s" },
+    data: {
+      teacherid: userid,
+      from_day: daterange[0],
+      to_day: daterange[1],
+      reason: reason,
+      type: "l",
+    },
   });
   if (!newleave) throw { status: 500, message: "Process failed" };
 
   return newleave;
 }
 
-async function addleaveNreleif({ date, timeslots, reason, schoolid }) {
+async function addleaveNreleif({ date, timeslots, reason, schoolid, userid }) {
   const newleave = await prisma.leave.create({
-    data: { from_day: date, reason: reason, type: "s" },
+    data: { teacherid: userid, from_day: date, reason: reason, type: "s" },
   });
   if (!newleave) throw { status: 500, message: "Process failed" };
 
