@@ -13,6 +13,12 @@ const enum_studenttution = {
   rejected: "c",
   suspended: "d",
 };
+const enum_payment = {
+  notpaid: "a",
+  paid: "b",
+  accceted: "c",
+  rejected: "d",
+};
 
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
@@ -328,10 +334,32 @@ Router.post("/studenttution", async (req, res) => {
   }
 });
 
+// student list eka ganne meken  (tutor)
+Router.get("/tutorpayment/all", async (req, res) => {
+  try {
+    const { month, pclassid } = req.body;
+    const re = await prisma.tutorpayment.findMany({
+      where: { pclassid: pclassid, month: month },
+      select: {
+        id: true,
+        status: true,
+        student: { select: { username: true, phone: true } },
+      },
+    });
+    let paid = re.filter((r) => r.status !== enum_payment.notpaid);
+    let notpaid = re.filter((r) => r.status === enum_payment.notpaid);
+    res.json({ paid, notpaid });
+  } catch (err) {
+    res
+      .status(err.status || 500)
+      .json({ status: err.status, message: err.message });
+  }
+});
+
 // accept or reject student student  (tutor)
 Router.patch("/studenttution/status", async (req, res) => {
   try {
-    const { stuid, pclassid, id, status } = req.body;
+    const { id, status } = req.body;
     const re = await prisma.studenttution.update({
       where: { id: id },
       data: { status: status },
