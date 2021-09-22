@@ -78,6 +78,7 @@ Router.put("/:userId", async (req, res) => {
         email: req.body.email,
         phone: req.body.phone,
         gender: req.body.gender,
+        adr: req.body.adr,
       },
     });
     res.json(updateUser);

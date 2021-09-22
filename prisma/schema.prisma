@@ -368,6 +368,8 @@ model tutorpayment {
 
   pclassid  Int
   studentid Int
+  month     Int
+  filename  String @db.VarChar(180)
   student   user   @relation(fields: [studentid], references: [id])
   pclass    pclass @relation(fields: [pclassid], references: [id])
 
@@ -441,18 +443,18 @@ model freeprogs {
 }
 
 model freeprogs_suggetions {
-  id                  Int                 @id @default(autoincrement())
-  user_id             Int
-  progtitle           String              @db.VarChar(100)
-  discription         String              @db.VarChar(300)
-  grade               String              @db.VarChar(20)
-  channel             String              @db.VarChar(20)
-  subject             String              @db.VarChar(20)
-  day                 String              @db.VarChar(10)
-  starttime           DateTime            @db.Time(0)
-  endtime             DateTime            @db.Time(0)
-  type                String              @db.VarChar(10)
-  student             user                @relation(fields: [user_id], references: [id])
+  id          Int      @id @default(autoincrement())
+  user_id     Int
+  progtitle   String   @db.VarChar(100)
+  discription String   @db.VarChar(300)
+  grade       String   @db.VarChar(20)
+  channel     String   @db.VarChar(20)
+  subject     String   @db.VarChar(20)
+  day         String   @db.VarChar(10)
+  starttime   DateTime @db.Time(0)
+  endtime     DateTime @db.Time(0)
+  type        String   @db.VarChar(10)
+  student     user     @relation(fields: [user_id], references: [id])
 
   @@index([user_id], name: "user_id")
   @@map("freeprogs suggetions")
