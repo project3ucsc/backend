@@ -2,6 +2,19 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 const { sectionmap } = require("../helpers/config");
+
+function getDateTxt(st, et) {
+  const timeoptions = {
+    hourCycle: "h23",
+    hour: "2-digit",
+    minute: "2-digit",
+  };
+  return `${st.toLocaleTimeString([], timeoptions)} - ${et.toLocaleTimeString(
+    [],
+    timeoptions
+  )}`;
+}
+
 async function getTimeSlotsForStudent(schoolid, studentid) {
   // const grade = "G12MATH";
   const studentdetail = await prisma.studentdetail.findFirst({
@@ -51,6 +64,7 @@ async function getTimeSlotsForStudent(schoolid, studentid) {
       },
       select: {
         weekday: true,
+        sdid: true,
         subject_detail: {
           select: {
             subject: {
@@ -145,6 +159,31 @@ async function getTimeSlotsForSclAdmin(schoolid, grade, classname) {
   return data;
 }
 
+async function getTimeSlotsForTeacher(teacherid) {
+  const data = await prisma.time_slot.findMany({
+    where: { teacher_id: teacherid },
+    select: {
+      classroom: { select: { grade: true, name: true } },
+      subject_detail: {
+        select: { id: true, subject: { select: { name: true } } },
+      },
+      period_time: { select: { starttime: true, endtime: true } },
+      weekday: true,
+    },
+  });
+  const mappeddata = data.map((d) => {
+    return {
+      name: `${d.classroom.grade}-${d.classroom.name} | ${d.subject_detail.subject.name}`,
+      time: getDateTxt(d.period_time.starttime, d.period_time.endtime),
+      day: d.weekday,
+      sdid: d.subject_detail.id,
+    };
+  });
+  console.log(mappeddata);
+
+  return mappeddata;
+}
+
 async function createTimeslot(data, schoolid) {
   const isConflicts = await isConflictsWithTeacher(data, schoolid);
 
@@ -228,9 +267,9 @@ async function isConflictsWithTeacher(data, schoolid) {
       overlaps.push(peroid.id);
     }
   });
-  console.log(overlaps);
+  console.log("overlaps", overlaps);
 
-  const conflicts = await prisma.time_slot.findMany({
+  const conflicts = await prisma.time_slot.findFirst({
     where: {
       teacher_id: data.teacher_id,
       weekday: data.weekday,
@@ -240,9 +279,9 @@ async function isConflictsWithTeacher(data, schoolid) {
     },
   });
 
-  console.log(conflicts);
+  console.log("conflicts", conflicts);
 
-  return conflicts.length !== 0;
+  return conflicts !== null;
 }
 
 async function deleteTimeslot(ts_id) {
@@ -257,9 +296,12 @@ async function deleteTimeslot(ts_id) {
 const timeslotservice = {
   getTimeSlotsForSclAdmin,
   getTimeSlotsForStudent,
+  getTimeSlotsForTeacher,
   createTimeslot,
   updateTimeslot,
   deleteTimeslot,
+
+  isConflictsWithTeacher,
 };
 
 module.exports = timeslotservice;

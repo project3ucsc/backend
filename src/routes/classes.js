@@ -13,6 +13,16 @@ Router.post("/addall/:sclid", async (req, res) => {
       .json({ status: err.status, message: err.message });
   }
 });
+Router.post("/addclass/:sclid", async (req, res) => {
+  try {
+    const data = await classservice.addClass(req.body, req.params.sclid);
+    res.json(data);
+  } catch (err) {
+    res
+      .status(err.status || 500)
+      .json({ status: err.status, message: err.message });
+  }
+});
 
 // return class for id
 Router.get("/:classid", async (req, res) => {
@@ -30,6 +40,18 @@ Router.get("/:classid", async (req, res) => {
 Router.get("/num/:sclid", async (req, res) => {
   try {
     const data = await classservice.getno_of_classes(req.params.sclid);
+    res.json(data);
+  } catch (err) {
+    res
+      .status(err.status || 500)
+      .json({ status: err.status, message: err.message });
+  }
+});
+// return no of classes for each section
+
+Router.get("/isconfig/:sclid", async (req, res) => {
+  try {
+    const data = await classservice.isConfig(parseInt(req.params.sclid));
     res.json(data);
   } catch (err) {
     res
@@ -67,6 +89,19 @@ Router.get("/getSubDetailsforTeacher/:userid", async (req, res) => {
 Router.get("/getSubDetailsforStudent/:userid", async (req, res) => {
   try {
     const data = await classservice.getSubDetailsForStudentRouter(
+      req.params.userid
+    );
+    res.json(data);
+  } catch (err) {
+    res
+      .status(err.status || 500)
+      .json({ status: err.status, message: err.message });
+  }
+});
+// return subject details for dash stu
+Router.get("/getSubDetailsforStudent/dash/:userid", async (req, res) => {
+  try {
+    const data = await classservice.getSubDetailsForStudentDash(
       req.params.userid
     );
     res.json(data);

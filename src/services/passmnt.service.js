@@ -7,28 +7,14 @@ const enum_submissionStatus = {
 };
 
 async function getAssmnts(sdid) {
-  const assmnts = await prisma.assmnt.findMany({
+  const assmnts = await prisma.passmnt.findMany({
     where: { sdid: parseInt(sdid) },
   });
   return assmnts;
 }
 
-async function getAssmntTimeline(userid) {
-  const stu = await prisma.studentdetail.findFirst({
-    where: { user_id: userid },
-  });
-  if (!stu) return [];
-
-  const assmnts = await prisma.assmnt.findMany({
-    where: { subject_detail: { classid: stu.classid } },
-    select: { duedate: true, id: true, title: true },
-    orderBy: { duedate: "asc" },
-  });
-  return assmnts;
-}
-
 async function getAssmntByID(assid) {
-  const assmnts = await prisma.assmnt.findFirst({
+  const assmnts = await prisma.passmnt.findFirst({
     where: { id: parseInt(assid) },
   });
 
@@ -37,12 +23,12 @@ async function getAssmntByID(assid) {
 }
 
 async function getAssmntByIdWithSubmisstion(assid, stuid) {
-  const assmnt = await prisma.assmnt.findFirst({
+  const assmnt = await prisma.passmnt.findFirst({
     where: { id: parseInt(assid) },
   });
   if (!assmnt) throw { status: 404, message: "No assessment found" };
 
-  let submission = await prisma.submission.findFirst({
+  let submission = await prisma.psubmission.findFirst({
     where: { assid: parseInt(assid), stuid: parseInt(stuid) },
   });
   let status = enum_submissionStatus.noattempt;
@@ -62,7 +48,7 @@ async function getAssmntByIdWithSubmisstion(assid, stuid) {
 }
 
 async function addAssmnt(data) {
-  const assmnt = await prisma.assmnt.create({
+  const assmnt = await prisma.passmnt.create({
     data: {
       title: data.title,
       discription: data.discription,
@@ -98,7 +84,7 @@ async function updateAssmnt({ assid, property, value }) {
       break;
   }
 
-  const assmnt = await prisma.assmnt.update({
+  const assmnt = await prisma.passmnt.update({
     where: { id: parseInt(assid) },
     data: updatedata,
   });
@@ -119,12 +105,12 @@ async function updateAssmnt({ assid, property, value }) {
 // }
 
 async function getSubmissions(assid) {
-  const assmnt = await prisma.assmnt.findFirst({
+  const assmnt = await prisma.passmnt.findFirst({
     where: { id: parseInt(assid) },
   });
   if (!assmnt) throw { status: 500, message: "invalid assesment id" };
 
-  const subs = await prisma.submission.findMany({
+  const subs = await prisma.psubmission.findMany({
     where: { assid: parseInt(assid) },
     select: {
       id: true,
@@ -141,7 +127,7 @@ async function getSubmissions(assid) {
 }
 
 async function upsertSubmission({ subid, assid, stuid, filename }) {
-  const sub = await prisma.submission.upsert({
+  const sub = await prisma.psubmission.upsert({
     where: {
       id: subid,
     },
@@ -161,15 +147,14 @@ async function upsertSubmission({ subid, assid, stuid, filename }) {
   return sub;
 }
 
-const assmntservice = {
+const passmntservice = {
   addAssmnt,
   getAssmntByID,
   getAssmntByIdWithSubmisstion,
   getAssmnts,
-  getAssmntTimeline,
   updateAssmnt,
   getSubmissions,
   upsertSubmission,
 };
 
-module.exports = assmntservice;
+module.exports = passmntservice;
