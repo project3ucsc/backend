@@ -1,8 +1,8 @@
 const { PrismaClient, acc_status, user_role } = require("@prisma/client");
+const notificationservice = require("./notification.service");
 const prisma = new PrismaClient();
 const jwt = require("jsonwebtoken");
 const { SHA256 } = require("crypto-js");
-
 const { secret } = require("../helpers/config");
 
 async function authenticate({ email, password }) {
@@ -61,6 +61,18 @@ async function register(values) {
         role: values.usertype,
         school_id: school.id,
       },
+    });
+    const title = "New Principal request.";
+    const discription =
+      "You have receieved a pricipal request from " +
+      values.username;
+
+    await notificationservice.addNotification({
+      title,
+      discription,
+      to: "2",
+      onClickTo: "/PrincipalManagement",
+      type: "a",
     });
 
     if (!user) throw { status: 500, message: "Registration Falied" };
