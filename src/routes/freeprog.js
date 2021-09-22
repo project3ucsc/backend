@@ -76,6 +76,7 @@ Router.post("/add/:userId", async (req, res) => {
           channel: req.body.channel,
           rating: req.body.rating,
           link: req.body.link,
+          imgurl: req.body.imgurl,
       },
     });
     
