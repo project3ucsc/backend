@@ -33,6 +33,19 @@ Router.get("/:sclid/:stuid", async (req, res) => {
       .json({ status: err.status, message: err.message });
   }
 });
+// return timetable data for teacher
+Router.get("/:tid", async (req, res) => {
+  try {
+    const data = await timeslotservice.getTimeSlotsForTeacher(
+      parseInt(req.params.tid)
+    );
+    res.json(data);
+  } catch (err) {
+    res
+      .status(err.status || 500)
+      .json({ status: err.status, message: err.message });
+  }
+});
 
 // add
 Router.post("/:sclid", async (req, res) => {

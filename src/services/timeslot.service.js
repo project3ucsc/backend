@@ -2,6 +2,19 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 const { sectionmap } = require("../helpers/config");
+
+function getDateTxt(st, et) {
+  const timeoptions = {
+    hourCycle: "h23",
+    hour: "2-digit",
+    minute: "2-digit",
+  };
+  return `${st.toLocaleTimeString([], timeoptions)} - ${et.toLocaleTimeString(
+    [],
+    timeoptions
+  )}`;
+}
+
 async function getTimeSlotsForStudent(schoolid, studentid) {
   // const grade = "G12MATH";
   const studentdetail = await prisma.studentdetail.findFirst({
@@ -51,6 +64,7 @@ async function getTimeSlotsForStudent(schoolid, studentid) {
       },
       select: {
         weekday: true,
+        sdid: true,
         subject_detail: {
           select: {
             subject: {
@@ -143,6 +157,31 @@ async function getTimeSlotsForSclAdmin(schoolid, grade, classname) {
 
   // if (!periods) throw { status: 404, message: "Details Not Found" };
   return data;
+}
+
+async function getTimeSlotsForTeacher(teacherid) {
+  const data = await prisma.time_slot.findMany({
+    where: { teacher_id: teacherid },
+    select: {
+      classroom: { select: { grade: true, name: true } },
+      subject_detail: {
+        select: { id: true, subject: { select: { name: true } } },
+      },
+      period_time: { select: { starttime: true, endtime: true } },
+      weekday: true,
+    },
+  });
+  const mappeddata = data.map((d) => {
+    return {
+      name: `${d.classroom.grade}-${d.classroom.name} | ${d.subject_detail.subject.name}`,
+      time: getDateTxt(d.period_time.starttime, d.period_time.endtime),
+      day: d.weekday,
+      sdid: d.subject_detail.id,
+    };
+  });
+  console.log(mappeddata);
+
+  return mappeddata;
 }
 
 async function createTimeslot(data, schoolid) {
@@ -257,6 +296,7 @@ async function deleteTimeslot(ts_id) {
 const timeslotservice = {
   getTimeSlotsForSclAdmin,
   getTimeSlotsForStudent,
+  getTimeSlotsForTeacher,
   createTimeslot,
   updateTimeslot,
   deleteTimeslot,

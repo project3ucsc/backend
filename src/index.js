@@ -26,6 +26,7 @@ const releifRoute = require("./routes/relief");
 const tutorRoute = require("./routes/tutor");
 const tutorsubjectRoute = require("./routes/tutorsubject");
 const passmntRoute = require("./routes/passmnt");
+const attendanceRoute = require("./routes/attendance");
 
 const freeprogRoute = require("./routes/freeprog");
 
@@ -41,6 +42,7 @@ app.use("/relief", releifRoute);
 app.use("/tutor", tutorRoute);
 app.use("/tutorsubject", tutorsubjectRoute);
 app.use("/passmnt", passmntRoute);
+app.use("/attendance", attendanceRoute);
 
 app.use("/freeprog", freeprogRoute);
 // app.use('/user', userRoute)

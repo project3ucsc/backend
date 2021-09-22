@@ -13,6 +13,20 @@ async function getAssmnts(sdid) {
   return assmnts;
 }
 
+async function getAssmntTimeline(userid) {
+  const stu = await prisma.studentdetail.findFirst({
+    where: { user_id: userid },
+  });
+  if (!stu) return [];
+
+  const assmnts = await prisma.assmnt.findMany({
+    where: { subject_detail: { classid: stu.classid } },
+    select: { duedate: true, id: true, title: true },
+    orderBy: { duedate: "asc" },
+  });
+  return assmnts;
+}
+
 async function getAssmntByID(assid) {
   const assmnts = await prisma.assmnt.findFirst({
     where: { id: parseInt(assid) },
@@ -152,6 +166,7 @@ const assmntservice = {
   getAssmntByID,
   getAssmntByIdWithSubmisstion,
   getAssmnts,
+  getAssmntTimeline,
   updateAssmnt,
   getSubmissions,
   upsertSubmission,
