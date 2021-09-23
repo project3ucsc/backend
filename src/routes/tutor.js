@@ -16,7 +16,7 @@ const enum_studenttution = {
 const enum_payment = {
   notpaid: "a",
   paid: "b",
-  accceted: "c",
+  accepted: "c",
   rejected: "d",
 };
 
@@ -349,12 +349,56 @@ Router.get("/tutorpayment/all", async (req, res) => {
     let paid = re.filter((r) => r.status !== enum_payment.notpaid);
     let notpaid = re.filter((r) => r.status === enum_payment.notpaid);
     res.json({ paid, notpaid });
+    //res.json("OKAYY");
   } catch (err) {
     res
       .status(err.status || 500)
       .json({ status: err.status, message: err.message });
   }
 });
+//----------------------------------------------------------------------------------------------
+
+//student payment details for popup model (tutor) - paid 
+Router.get("/tutorpayment/:paymntid", async (req, res) => {
+  try {
+    const re = await prisma.tutorpayment.findFirst({
+      where: { id: parseInt(req.params.paymntid) },
+      select: {
+        filename : true,
+        student: {
+          select: { id: true, username: true, email: true, phone: true },
+        },
+      },
+    });
+
+    res.json(re);
+  } catch (err) {
+    res
+      .status(err.status || 500)
+      .json({ status: err.status, message: err.message });
+  }
+});
+
+
+
+// get approve or reject student by tutor
+Router.patch("/tutorpayment/status", async (req, res) => {
+  try {
+    const { status, id } = req.body;
+    const cls = await prisma.tutorpayment.update({
+      where: { id: id },
+      data: { status: status },
+    });
+    if (!cls) throw { status: 500, message: "Procces failed" };
+    res.json(cls);
+  } catch (err) {
+    res
+      .status(err.status || 500)
+      .json({ status: err.status, message: err.message });
+  }
+});
+
+ //--------------------------------------------------------------------------------------------
 
 // accept or reject student student  (tutor)
 Router.patch("/studenttution/status", async (req, res) => {
