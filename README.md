@@ -1,4 +1,6 @@
- # Group Number - 53
+ # KnowledgeHub
+ 
+ ## Group Number - 53
  
  ## Group Members 
  
@@ -14,7 +16,7 @@
  ### Step 01
    #### Clone the backend from Github.
    #### Open the command line or terminal and execute the below command.
-    $ git clone https://github.com/project3ucsc/backend.gi
+    $ git clone https://github.com/project3ucsc/backend.git
     
   ### Step 02  
    #### Open backend folder
