@@ -17,3 +17,18 @@ or
     
 #### GET  /movie/imdb/{rating}    
     Get all movies higher than given imdb rating.
+
+
+##Configure the Backend
+    Clone the backend from Github.
+    Open the command line or terminal and execute the below command.
+    $ git clone https://github.com/project3ucsc/backend.gi
+    
+##Open backend folder
+    $ cd backend
+    
+##install dependencies 
+    $ npm install
+    
+##Create a database named knowledge_hub in your MySQL server
+
