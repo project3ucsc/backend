@@ -14,7 +14,9 @@
  
  
 ## Description
- ### Knowledge Hub is a web application which provides a platform for teachers and students to do their distance learning process efficiently
+ #### KnowledgeHub is a web application which provides a platform for teachers and students to do their distance learning process efficiently. Multiple schools can create their learning management system through this system.
+ 
+   ##### This is the backend repository. We use node.js, express.js and prisma.
 
 
 ## Configure the Backend
