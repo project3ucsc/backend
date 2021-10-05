@@ -13,6 +13,8 @@
 |18020722  |G.T.S. Sathindra     |
  
  
+## Description
+ ### Knowledge Hub is a web application which provides a platform for teachers and students to do their distance learning process efficiently
 
 
 ## Configure the Backend
