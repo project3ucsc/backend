@@ -19,21 +19,21 @@ or
     Get all movies higher than given imdb rating.
 
 
-##Configure the Backend
+#### Configure the Backend
     Clone the backend from Github.
     Open the command line or terminal and execute the below command.
     $ git clone https://github.com/project3ucsc/backend.gi
     
-##Open backend folder
+#### Open backend folder
     $ cd backend
     
-##install dependencies 
+#### install dependencies 
     $ npm install
     
-##Create a database named knowledge_hub in your MySQL server
+#### Create a database named knowledge_hub in your MySQL server
 
-##Need to set an environment variable named DATABASE_URL.
-##Edit the .env file according to the below instructions.
+#### Need to set an environment variable named DATABASE_URL.
+#### Edit the .env file according to the below instructions.
     DATABASE_URL = 'mysql://root:@localhost:3306/knowledge_hub'
     
 
