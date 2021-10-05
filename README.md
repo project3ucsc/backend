@@ -2,11 +2,11 @@
  
  ## Group Members 
  
- ##### 18000738  L.D.L.S.Jayasinghe
- ##### 18000614  R.M.D.S.Harischandra
- ##### 18001513  G.R.N.Sankalani
- ##### 18020712  P.R.S.T.Sandeepani
- ##### 18020722  G.T.S .Sathindra
+ #####   18000738      L.D.L.S.Jayasinghe
+ #####   18000614      R.M.D.S.Harischandra
+ #####   18001513      G.R.N.Sankalani
+ #####   18020712      P.R.S.T.Sandeepani
+ #####   18020722      G.T.S .Sathindra
 
 
 ## Configure the Backend
@@ -21,7 +21,7 @@
     $ cd backend
     
   ### Step 03 
-   #### install dependencies 
+   #### Install dependencies 
     $ npm install
   
   ### Step 04
