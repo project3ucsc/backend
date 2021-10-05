@@ -32,3 +32,9 @@ or
     
 ##Create a database named knowledge_hub in your MySQL server
 
+##Need to set an environment variable named DATABASE_URL.
+##Edit the .env file according to the below instructions.
+    DATABASE_URL = 'mysql://root:@localhost:3306/knowledge_hub'
+    
+
+
